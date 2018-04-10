@@ -1,0 +1,17 @@
+Oggetto che rappresenta un file
+Peer è la lista dei peer che l'ha condiviso identificati con il session_id
+che viene poi sostituito dagli indirizzi ip al momento della ricerca
+
+{
+    "_id" : ObjectId("570cf798482e0243dd11bc0e"),
+    "name" : "jon snow.jpg",
+    "md5" : "f62aca0a358296fe8d80d5a2763e89a6",
+    "peers" : [
+        {
+            "session_id" : "3"
+        },
+        {
+            "session_id" : "2"
+        }
+    ]
+}

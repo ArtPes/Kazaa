@@ -1,0 +1,7 @@
+Oggetto che rappresenta una sessione aperta
+{
+    "session_id" : "1",
+    "ipv4" : "172.030.008.001",
+    "ipv6" : "fc00:0000:0000:0000:0000:0000:0008:0001",
+    "port" : "06000"
+}
