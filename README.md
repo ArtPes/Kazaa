@@ -8,4 +8,4 @@
 * **lovalova91** - (https://github.com/lovalova1991)
 * **padovanl** - (https://github.com/padovanl)
 
-See also the list of [contributors](https://github.com/ArtPes/P2P/graphs/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/ArtPes/Kazaa/graphs/contributors) who participated in this project.
