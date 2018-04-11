@@ -7,7 +7,7 @@ from random import randint
 import threading
 from dbmodules.dbconnection import *
 from helpers import *
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui
 
 
 class Directory_Server(threading.Thread):

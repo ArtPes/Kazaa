@@ -4,10 +4,11 @@ import hashlib
 import random
 import string
 import socket
-import connection
+from helpers import connection
 import sys
 import time
 from ipaddr import *
+
 
 def hashfile(file, hasher, blocksize=65536):
     buf = file.read(blocksize)

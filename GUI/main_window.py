@@ -6,66 +6,61 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 try:
-    _fromUtf8 = QtCore.QString.fromUtf8
-except AttributeError:
-    def _fromUtf8(s):
-        return s
-
-try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
+    _encoding = QtWidgets.QApplication.UnicodeUTF8
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+        return QtCore.QCoreApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
+        return QtCore.QCoreApplication.translate(context, text, disambig)
 
-class Ui_MainWindow(QtGui.QMainWindow):
+
+class Ui_MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super(Ui_MainWindow, self).__init__(parent)
-        self.setObjectName(_fromUtf8("MainWindow"))
+        self.setObjectName("MainWindow")
         self.resize(1360, 450)
         self.setMaximumSize(QtCore.QSize(1360, 450))
-        self.centralwidget = QtGui.QWidget(self)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+        self.centralwidget = QtWidgets.QWidget(self)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.centralwidget.sizePolicy().hasHeightForWidth())
         self.centralwidget.setSizePolicy(sizePolicy)
         self.centralwidget.setMaximumSize(QtCore.QSize(1000, 1200))
-        self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
-        self.verticalLayout_3 = QtGui.QVBoxLayout(self.centralwidget)
-        self.verticalLayout_3.setSizeConstraint(QtGui.QLayout.SetMaximumSize)
-        self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.label = QtGui.QLabel(self.centralwidget)
+        self.centralwidget.setObjectName("centralwidget")
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.centralwidget)
+        self.verticalLayout_3.setSizeConstraint(QtWidgets.QLayout.SetMaximumSize)
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setMaximumSize(QtCore.QSize(90, 20))
-        self.label.setObjectName(_fromUtf8("label"))
+        self.label.setObjectName("label")
         self.horizontalLayout.addWidget(self.label)
-        self.label_1 = QtGui.QLabel(self.centralwidget)
+        self.label_1 = QtWidgets.QLabel(self.centralwidget)
         self.label_1.setMaximumSize(QtCore.QSize(50, 20))
-        self.label_1.setObjectName(_fromUtf8("label_1"))
+        self.label_1.setObjectName("label_1")
         self.horizontalLayout.addWidget(self.label_1)
         self.verticalLayout_3.addLayout(self.horizontalLayout)
-        self.gridLayout_3 = QtGui.QGridLayout()
-        self.gridLayout_3.setSizeConstraint(QtGui.QLayout.SetMinimumSize)
+        self.gridLayout_3 = QtWidgets.QGridLayout()
+        self.gridLayout_3.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
         self.gridLayout_3.setContentsMargins(-1, 0, -1, 0)
-        self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
-        self.Panel = QtGui.QGridLayout()
-        self.Panel.setSizeConstraint(QtGui.QLayout.SetDefaultConstraint)
-        self.Panel.setObjectName(_fromUtf8("Panel"))
-        self.client = QtGui.QTextBrowser(self.centralwidget)
+        self.gridLayout_3.setObjectName("gridLayout_3")
+        self.Panel = QtWidgets.QGridLayout()
+        self.Panel.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
+        self.Panel.setObjectName("Panel")
+        self.client = QtWidgets.QTextBrowser(self.centralwidget)
         self.client.setMinimumSize(QtCore.QSize(300, 200))
         self.client.setMaximumSize(QtCore.QSize(1000, 1200))
-        self.client.setObjectName(_fromUtf8("client"))
+        self.client.setObjectName("client")
         self.Panel.addWidget(self.client, 1, 0, 1, 1)
-        self.server = QtGui.QTextBrowser(self.centralwidget)
+        self.server = QtWidgets.QTextBrowser(self.centralwidget)
         self.server.setMinimumSize(QtCore.QSize(300, 200))
         self.server.setMaximumSize(QtCore.QSize(1000, 1200))
-        self.server.setObjectName(_fromUtf8("server"))
+        self.server.setObjectName("server")
         self.Panel.addWidget(self.server, 1, 1, 1, 1)
         self.gridLayout_3.addLayout(self.Panel, 0, 0, 1, 1)
         self.verticalLayout_3.addLayout(self.gridLayout_3)

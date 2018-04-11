@@ -1,7 +1,7 @@
 # coding=utf-8
 import time
-from Owner import Owner
-from SharedFile import SharedFile
+from Client import Owner
+from Client import SharedFile
 from helpers import connection
 from helpers.helpers import *
 
@@ -49,7 +49,7 @@ class Client(object):
             for file in files:
                 # TODO: cambiare sul mac con ../fileCondivisi
                 file_md5 = hashfile(open("fileCondivisi/" + file, 'rb'), hashlib.md5())
-                new_file = SharedFile(file, file_md5)
+                new_file = SharedFile.SharedFile(file, file_md5)
                 self.files_list.append(new_file)
 
     def login(self):
@@ -84,7 +84,7 @@ class Client(object):
         except socket.error as e:
             self.print_trigger.emit('Socket Error: ' + str(e), '01')
         except Exception as e:
-            self.print_trigger.emit('Error: ' + e, '01')
+            self.print_trigger.emit('Error: ' + str(e), '01')
 
         if response_message is None:
             output(self.out_lck, 'No response from directory. Login failed')
@@ -340,9 +340,9 @@ class Client(object):
                                         owner_j_ipv6 = self.directory.recv(39)  # indirizzo ipv6 del j-esimo peer
                                         owner_j_port = self.directory.recv(5)  # porta del j-esimo peer
 
-                                        file_owners.append(Owner(owner_j_ipv4, owner_j_ipv6, owner_j_port))
+                                        file_owners.append(Owner.Owner(owner_j_ipv4, owner_j_ipv6, owner_j_port))
 
-                                    available_files.append(SharedFile(file_i_name, file_i_md5, file_owners))
+                                    available_files.append(SharedFile.SharedFile(file_i_name, file_i_md5, file_owners))
 
                             except socket.error as e:
                                 # output(self.out_lck, 'Socket Error: ' + str(msg))

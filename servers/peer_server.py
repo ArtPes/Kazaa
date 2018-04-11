@@ -5,7 +5,7 @@ import socket, os, hashlib, select, sys, time
 from random import randint
 import threading
 from dbmodules.dbconnection import *
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui
 from helpers import *
 
 
@@ -16,7 +16,7 @@ class Peer_Server(threading.Thread):
         Peer: Gestisce la propagazione dei pacchetti SUPE a tutti i vicini e l'invio dei file
     """
 
-    def __init__(self, (client, address), dbConnect, output_lock, print_trigger, my_ipv4, my_ipv6, my_port, ttl, is_supernode):
+    def __init__(self, client, address, dbConnect, output_lock, print_trigger, my_ipv4, my_ipv6, my_port, ttl, is_supernode):
         #QtCore.QThread.__init__(self, parent=None)
         threading.Thread.__init__(self)
         self.client = client
@@ -165,8 +165,8 @@ class Peer_Server(threading.Thread):
                 try:
                     # TODO: cambiare sul mac con ../fileCondivisi
                     fileFd = open("fileCondivisi/" + file['name'], "rb")
-                except Exception, e:
-                    self.print_trigger.emit('File Error: ' + e.message + "\n", "11")
+                except Exception as e:
+                    self.print_trigger.emit('File Error: ' + e + "\n", "11")
                 else:
                     # TODO: cambiare sul mac con ../fileCondivisi
                     tot_dim = os.stat("fileCondivisi/" + file['name']).st_size  # Calcolo delle dimesioni del file
@@ -193,7 +193,7 @@ class Peer_Server(threading.Thread):
 
                         while len(buff) == chunk_size:  # Invio dei chunks
                             try:
-                                msg = str(len(buff)).zfill(5) + buff
+                                msg = str(len(buff)).zfill(5) + str(buff)
                                 conn.sendall(msg)  # Invio di
                                 chunks_sent += 1
 
@@ -201,29 +201,29 @@ class Peer_Server(threading.Thread):
                                                 'Uploading ' + fileFd.name)  # Stampa a video del progresso dell'upload
 
                                 buff = fileFd.read(chunk_size)  # Lettura chunk successivo
-                            except socket.error, msg:
+                            except socket.error as msg:
                                 self.print_trigger.emit("Connection Error: %s" % msg, "11")
                             except Exception as e:
-                                self.print_trigger.emit('Error: ' + e.message, "11")
+                                self.print_trigger.emit('Error: ' + e, "11")
 
                         if len(buff) != 0:  # Invio dell'eventuale resto, se più piccolo di chunk_size
                             try:
 
-                                msg = str(len(buff)).zfill(5) + buff
+                                msg = str(len(buff)).zfill(5) + str(buff)
                                 conn.sendall(msg)
 
-                            except socket.error, msg:
+                            except socket.error as msg:
                                 self.print_trigger.emit("Connection Error: %s" % msg, "11")
                             except Exception as e:
-                                self.print_trigger.emit('Error: ' + e.message, "11")
+                                self.print_trigger.emit('Error: ' + e, "11")
 
                         output(self.output_lock, "\r\nUpload Completed")
 
                         fileFd.close()  # Chiusura del file
-                    except socket.error, msg:
+                    except socket.error as msg:
                         self.print_trigger.emit("Connection Error: %s" % msg, "11")
                     except Exception as e:
-                        self.print_trigger.emit('Error: ' + e.message, "11")
+                        self.print_trigger.emit('Error: ' + e, "11")
                     except EOFError:
                         self.print_trigger.emit("Error: You have read a EOF char", "11")
 

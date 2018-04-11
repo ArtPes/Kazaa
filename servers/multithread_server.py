@@ -1,11 +1,14 @@
 # coding=utf-8
 import socket, os, hashlib, select, sys, time
 
-sys.path.insert(1, '/home/massa/Documenti/PycharmProjects/P2PKazaa')
-from peer_server import *
-from directory_server import *
+#sys.path.insert(1, '/home/massa/Documenti/PycharmProjects/P2PKazaa')
+import threading
+
+from dbmodules.dbconnection import MongoConnection
+from servers import peer_server
+from servers import directory_server
 import config
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore
 
 class Server(threading.Thread, QtCore.QThread):
     print_trigger = QtCore.pyqtSignal(str, str)
@@ -36,11 +39,11 @@ class Server(threading.Thread, QtCore.QThread):
                 self.sock_lst[-1].bind((self.host, item))
                 self.sock_lst[-1].listen(self.backlog)
                 #self.print_trigger.emit("Listening on " + str(item), "10")
-        except socket.error, (value, message):
+        except socket.error():
             if self.sock_lst[-1]:
                 self.sock_lst[-1].close()
                 self.sock_lst = self.sock_lst[:-1]
-                self.print_trigger.emit("Could not open socket: " + message, "11")
+                self.print_trigger.emit("Could not open socket", "11")
             sys.exit(1)
 
         self.running = 1
@@ -56,22 +59,22 @@ class Server(threading.Thread, QtCore.QThread):
                         if port == self.port_dir:
                             try:
                                 # handle the server socket
-                                c = Directory_Server(item.accept(), self.dbConnect, self.output_lock, self.print_trigger, config.my_ipv4,
+                                c = directory_server.Directory_Server(item.accept(), self.dbConnect, self.output_lock, self.print_trigger, config.my_ipv4,
                                                      config.my_ipv6, config.my_port, config.ttl, self.is_supernode)
                                 c.start()
                                 self.threads.append(c)
                             except Exception as e:
-                                self.print_trigger.emit("Server Error: " + e.message, "11")
+                                self.print_trigger.emit("Server Error: " + e, "11")
 
                         elif port == self.port_peer:
                             try:
                                 # handle the server socket
-                                c = Peer_Server(item.accept(), self.dbConnect, self.output_lock, self.print_trigger, config.my_ipv4,
+                                c = peer_server.Peer_Server(item.accept(), self.dbConnect, self.output_lock, self.print_trigger, config.my_ipv4,
                                                 config.my_ipv6, config.my_port, config.ttl, self.is_supernode)
                                 c.start()
                                 self.threads.append(c)
                             except Exception as e:
-                                self.print_trigger.emit("Server Error: " + e.message, "11")
+                                self.print_trigger.emit("Server Error: " + e, "11")
 
     def stop(self):
         # close all threads
