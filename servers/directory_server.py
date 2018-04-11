@@ -1,12 +1,6 @@
-# coding=utf-8
-# coding=utf-8
-import socket, os, hashlib, select, sys, time
-
-#sys.path.insert(1, '/home/massa/Documenti/PycharmProjects/P2PKazaa')
-from random import randint
 import threading
 from dbmodules.dbconnection import *
-from helpers import *
+
 
 class Directory_Server(threading.Thread):
     """
@@ -19,8 +13,7 @@ class Directory_Server(threading.Thread):
     #             is_supernode):
 
     # in python 3 dovrebbe essere così:
-    def __init__(self, arg, dbConnect, output_lock, print_trigger, my_ipv4, my_ipv6, my_port, ttl,
-                     is_supernode):
+    def __init__(self, arg, dbConnect, output_lock, print_trigger, my_ipv4, my_ipv6, my_port, ttl, is_supernode):
         # QtCore.QThread.__init__(self, parent=None)
         threading.Thread.__init__(self)
         self.client = arg[0]
@@ -37,6 +30,7 @@ class Directory_Server(threading.Thread):
 
     def run(self):
         conn = self.client
+        # Ricevo il pacchetto
         cmd = conn.recv(self.size).decode('ascii')
 
         while len(cmd) > 0:
@@ -48,6 +42,7 @@ class Directory_Server(threading.Thread):
                 ipv6 = cmd[36:75]
                 port = cmd[75:80]
                 ttl = int(cmd[80:82])
+                # Stampo a video
                 self.print_trigger.emit("<= " + str(self.address[0]) + "  " + cmd[0:4] + "  " + pktId + "  " + ipv4
                                         + "  " + ipv6 + "  " + str(port).zfill(5) + "  " + str(ttl).zfill(2), "10")
 
@@ -61,10 +56,11 @@ class Directory_Server(threading.Thread):
                     ttl -= 1
                     neighbors = self.dbConnect.get_neighbors()
 
-                    if (len(neighbors) > 0):
+                    if len(neighbors) > 0:
                         # “SUPE”[4B].Pktid[16B].IPP2P[55B].PP2P[5B].TTL[2B]
 
                         msg = 'SUPE' + pktId + ipv4 + '|' + ipv6 + port + str(ttl).zfill(2)
+
                         for neighbor in neighbors:
                             if not is_sender(self.address[0], neighbor['ipv4'], neighbor['ipv6']):
                                 sendTo(self.print_trigger, "1", neighbor['ipv4'], neighbor['ipv6'], neighbor['port'], msg)
@@ -134,7 +130,7 @@ class Directory_Server(threading.Thread):
                     ttl -= 1
                     supernodes = self.dbConnect.get_supernodes()
 
-                    if (len(supernodes) > 0):
+                    if len(supernodes) > 0:
                         # “QUER”[4B].Pktid[16B].IPP2P[55B].PP2P[5B].TTL[2B].Ricerca[20B]          mando solo ai supernodi
 
                         msg = 'QUER' + pktId + ipv4 + '|' + ipv6 + port + str(ttl).zfill(2) + searchStr
@@ -232,7 +228,7 @@ class Directory_Server(threading.Thread):
 
                 try:
 
-                    conn.send(msg)
+                    conn.send(msg.encode('utf-8'))
                     self.print_trigger.emit("=> " + str(self.address[0]) + "  " + msg[0:4] + '  ' + msg[4:7], "12")
 
                 except socket.error as e:
@@ -262,7 +258,7 @@ class Directory_Server(threading.Thread):
 
                     supernodes = self.dbConnect.get_supernodes()
 
-                    if (len(supernodes) > 0):
+                    if len(supernodes) > 0:
                         # “QUER”[4B].Pktid[16B].IPP2P[55B].PP2P[5B].TTL[2B].Ricerca[20B]          mando solo ai supernodi
 
                         msg = 'QUER' + pktId + self.my_ipv4 + '|' + self.my_ipv6 + self.my_port + str(self.ttl).zfill(
@@ -287,8 +283,7 @@ class Directory_Server(threading.Thread):
                                 msg += peer['ipv4'] + '|' + peer['ipv6'] + peer['port']
 
                         try:
-
-                            conn.send(msg)
+                            conn.send(msg.encode('utf-8'))
                             self.print_trigger.emit("=> " + str(self.address[0]) + "  " + msg[0:4] + '  ' + msg[4:], "12")
 
                         except socket.error as e:
@@ -298,12 +293,11 @@ class Directory_Server(threading.Thread):
 
                     else:
                         try:
-
-                            conn.send("AFIN000")
-                            self.print_trigger.emit("=> " + str(self.address[0]) + "  " + msg[0:4] + '  ' + msg[4:], "12")
+                            conn.send("AFIN000".encode('utf-8'))
+                            self.print_trigger.emit("=> " + str(self.address[0]) + "  " + "AFIN" + '  ' + "000", "12")
 
                         except socket.error as msg:
-                            self.print_trigger.emit("Connection Error: %s" % str(e), "11")
+                            self.print_trigger.emit("Connection Error: %s" % str(msg), "11")
                         except Exception as e:
                             self.print_trigger.emit('Error: ' + str(e), "11")
 
@@ -313,4 +307,4 @@ class Directory_Server(threading.Thread):
             else:
                 self.print_trigger.emit("\n Command not recognized", "11")
 
-            cmd = conn.recv(self.size)
+            cmd = conn.recv(self.size).decode('ascii')

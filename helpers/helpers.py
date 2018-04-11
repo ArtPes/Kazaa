@@ -50,12 +50,12 @@ def recvall(socket, chunk_size):
     :rtype: bytearray
     """
 
-    data = socket.recv(chunk_size)  # Lettura di chunk_size byte dalla socket
+    data = socket.recv(chunk_size).decode('ascii')  # Lettura di chunk_size byte dalla socket
     actual_length = len(data)
 
     # Se sono stati letti meno byte di chunk_size continua la lettura finchè non si raggiunge la dimensione specificata
     while actual_length < chunk_size:
-        new_data = socket.recv(chunk_size - actual_length)
+        new_data = socket.recv(chunk_size - actual_length).decode('ascii')
         actual_length += len(new_data)
         data += new_data
 
@@ -100,15 +100,16 @@ def print_menu_top(lock):
 
 def print_menu_bottom(lock):
     lock.acquire()
-    print ("##                                                    ##")
-    print ("########################################################")
+    print("##                                                    ##")
+    print("########################################################")
     lock.release()
 
 
 def output(lock, message):
     lock.acquire()
-    print (message)
+    print(message)
     lock.release()
+
 
 def output_timer(lock, seconds):
     lock.acquire()
@@ -119,6 +120,7 @@ def output_timer(lock, seconds):
         time.sleep(1)
 
     lock.release()
+
 
 def update_progress(lock, count, total, suffix=''):
     """
@@ -145,7 +147,6 @@ def update_progress(lock, count, total, suffix=''):
     lock.release()
 
 
-
 def sendTo(print_trigger, print_mode, ipv4, ipv6, port, msg):
 
     c = connection.Connection(ipv4, ipv6, port, print_trigger, print_mode)
@@ -153,7 +154,7 @@ def sendTo(print_trigger, print_mode, ipv4, ipv6, port, msg):
     try:
         peerSock = c.socket
 
-        peerSock.send(msg)
+        peerSock.send(msg.encode('utf-8'))
 
         if msg[0:4] == "SUPE":
             msg_pktId = msg[4:20]
@@ -213,6 +214,7 @@ def sendTo(print_trigger, print_mode, ipv4, ipv6, port, msg):
         print_trigger.emit('sendTo Error: ' + str(e), print_mode+"1")
     except Exception as e:
         print_trigger.emit('sendTo Error: ' + str(e), print_mode+"1")
+
 
 def is_sender(address, pktIpv4, pktIpv6):
     addrIpv4 = address.split(":")[-1]

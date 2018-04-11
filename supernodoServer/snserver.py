@@ -1,17 +1,17 @@
 # coding=utf-8
-import socket, os, hashlib, select, sys, time
-sys.path.insert(1,'/home/massa/Documenti/PycharmProjects/P2PKazaa')
-from random import randint
+import select
+#sys.path.insert(1,'/home/massa/Documenti/PycharmProjects/P2PKazaa')
 import threading
 from dbmodules.dbconnection import *
 from supernodoServer.commandFile import *
 
 
-my_ipv4 = "172.030.008.002"
-my_ipv6 = "fc00:0000:0000:0000:0000:0000:0008:0002"
+my_ipv4 = "172.016.004.001"
+my_ipv6 = "fc00:0000:0000:0000:0000:0000:0004:0001"
 my_port = "00080"
 my_peer_port = "06000"
 TTL = '04'
+
 
 class Client(threading.Thread):
     def __init__(self, client, address, dbConnect, output_lock):
@@ -24,7 +24,7 @@ class Client(threading.Thread):
 
     def run(self):
         conn = self.client
-        cmd = conn.recv(self.size)
+        cmd = conn.recv(self.size).decode('ascii')
 
         if cmd[:4] == 'SUPE':
             #“SUPE”[4B].Pktid[16B].IPP2P[55B].PP2P[5B].TTL[2B]
@@ -54,7 +54,6 @@ class Client(threading.Thread):
             msg = 'ALGI' + sessionId
             # funziona solo se il mantiene la connessione
             conn.send(msg.encode('utf-8'))
-
 
         elif cmd[:4] == 'ADFF':
             #“ADFF”[4B].SessionID[16B].Filemd5[32B].Filename[100B]
@@ -97,8 +96,7 @@ class Client(threading.Thread):
             ttl = cmd[80:82]
             searchStr = cmd[82:102]
             output(self.output_lock, "\nMessagge received: ")
-            output(self.output_lock, cmd[0:4] + "\t" + pktId + "\t" + ipv4 + "\t" + ipv6 + "\t" +
-                                                                   port + "\t" + ttl + "\t" + searchStr)
+            output(self.output_lock, cmd[0:4] + "\t" + pktId + "\t" + ipv4 + "\t" + ipv6 + "\t" + port + "\t" + ttl + "\t" + searchStr)
 
             # aggiungere return True/False in dbconnection.py
             visited = self.dbConnect.insert_packet(pktId)
