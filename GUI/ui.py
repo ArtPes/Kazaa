@@ -46,4 +46,3 @@ if __name__ == '__main__':
         threads.append(thread)  # keep a reference
 
     sys.exit(app.exec_())
-
