@@ -68,7 +68,7 @@ class Client(object):
             c.connect()
             self.directory = c.socket
 
-            self.directory.send(msg)  # Richiesta di login
+            self.directory.send(msg.encode('ascii'))  # Richiesta di login
             self.print_trigger.emit(
                 '=> ' + str(self.directory.getpeername()[0]) + '  ' + msg[0:4] + '  ' + self.my_ipv4 + '  ' +
                 self.my_ipv6 + '  ' + str(self.my_port).zfill(5), "00")
@@ -76,7 +76,7 @@ class Client(object):
             # Spazio
             self.print_trigger.emit("", "00")
 
-            response_message = self.directory.recv(20)  # Risposta della directory, deve contenere ALGI e il session id
+            response_message = self.directory.recv(20).decode('utf-8') # Risposta della directory, deve contenere ALGI e il session id
             self.print_trigger.emit(
                 '<= ' + str(self.directory.getpeername()[0]) + '  ' + response_message[0:4] + '  ' + response_message[4:20],
                 '02')

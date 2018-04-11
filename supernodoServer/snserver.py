@@ -4,7 +4,7 @@ sys.path.insert(1,'/home/massa/Documenti/PycharmProjects/P2PKazaa')
 from random import randint
 import threading
 from dbmodules.dbconnection import *
-from commandFile import *
+from supernodoServer.commandFile import *
 
 
 my_ipv4 = "172.030.008.002"
@@ -14,7 +14,7 @@ my_peer_port = "06000"
 TTL = '04'
 
 class Client(threading.Thread):
-    def __init__(self, (client, address), dbConnect, output_lock):
+    def __init__(self, client, address, dbConnect, output_lock):
         threading.Thread.__init__(self)
         self.client = client
         self.address = address
@@ -53,7 +53,7 @@ class Client(threading.Thread):
 
             msg = 'ALGI' + sessionId
             # funziona solo se il mantiene la connessione
-            conn.send(msg)
+            conn.send(msg.encode('utf-8'))
 
 
         elif cmd[:4] == 'ADFF':
@@ -86,7 +86,7 @@ class Client(threading.Thread):
 
             msg = 'ALGO' + str(delete).zfill(3)
 
-            conn.send(msg)
+            conn.send(msg.encode('utf-8'))
 
         elif cmd[:4] == 'QUER':
             #“QUER”[4B].Pktid[16B].IPP2P[55B].PP2P[5B].TTL[2B].Ricerca[20B]            ricevo solo dai supernodi
@@ -200,15 +200,10 @@ class Server(threading.Thread):
             self.server.bind((self.host, self.port))
             self.server.listen(5)
             output(self.output_lock, 'Listening on ' + str(self.port))
-        except socket.error, (value, message):
+        except socket.error as message:
             if self.server:
                 self.server.close()
             output(self.output_lock, "Server_open_socket: Could not open socket: " + message)
-            sys.exit(1)
-        except socket.error, (value, message):
-            if self.server:
-                self.server.close()
-                output(self.output_lock, "Server_open_socket-Error: Could not open socket: " + message)
             sys.exit(1)
 
     def run(self):
@@ -227,9 +222,9 @@ class Server(threading.Thread):
                             c.start()
                             self.threads.append(c)
                         except Exception as e:
-                            output(self.output_lock, "Server_run_socket: " + Exception + " / " + e.message)
+                            output(self.output_lock, "Server_run_socket: " + e)
         except Exception as e:
-            output(self.output_lock, 'Server_run_socket: ' + e.message)
+            output(self.output_lock, 'Server_run_socket: ' + e)
 
 
     def stop(self):

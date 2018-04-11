@@ -2,13 +2,11 @@
 # coding=utf-8
 import socket, os, hashlib, select, sys, time
 
-sys.path.insert(1, '/home/massa/Documenti/PycharmProjects/P2PKazaa')
+#sys.path.insert(1, '/home/massa/Documenti/PycharmProjects/P2PKazaa')
 from random import randint
 import threading
 from dbmodules.dbconnection import *
 from helpers import *
-from PyQt5 import QtCore, QtGui
-
 
 class Directory_Server(threading.Thread):
     """
@@ -39,7 +37,7 @@ class Directory_Server(threading.Thread):
 
     def run(self):
         conn = self.client
-        cmd = conn.recv(self.size)
+        cmd = conn.recv(self.size).decode('ascii')
 
         while len(cmd) > 0:
             if cmd[:4] == 'SUPE':
@@ -181,10 +179,8 @@ class Directory_Server(threading.Thread):
                 msg = 'ALGI' + sessionId
 
                 try:
-
-                    conn.send(msg)
+                    conn.send(msg.encode('utf-8'))
                     self.print_trigger.emit("=> " + str(self.address[0]) + "  " + msg[0:4] + '  ' + sessionId, "12")
-
                 except socket.error as e:
                     self.print_trigger.emit("Connection Error: %s" % str(e), "11")
                 except Exception as e:
