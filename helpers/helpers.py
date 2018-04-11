@@ -6,7 +6,7 @@ import string
 import socket
 from helpers import connection
 import sys
-import time
+import time, pygame
 from ipaddr import *
 
 
@@ -234,3 +234,18 @@ def is_sender(address, pktIpv4, pktIpv6):
         else:
             return False
     return False
+
+
+def sound_success():
+    file = './music/success.wav'
+    sound(file)
+
+def sound_error():
+    file = './music/error.wav'
+    sound(file)
+
+def sound(file):
+
+    pygame.init()
+    sound = pygame.mixer.Sound(file)
+    sound.play()

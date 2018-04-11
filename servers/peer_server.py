@@ -218,7 +218,8 @@ class Peer_Server(threading.Thread):
                                 self.print_trigger.emit('Error: ' + e, "11")
 
                         output(self.output_lock, "\r\nUpload Completed")
-
+                        # tutto ok, su le mani parte il sound!!
+                        sound_success()
                         fileFd.close()  # Chiusura del file
                     except socket.error as msg:
                         self.print_trigger.emit("Connection Error: %s" % msg, "11")

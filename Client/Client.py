@@ -503,8 +503,10 @@ class Client(object):
                                           hashlib.md5())  # Controllo dell'integrità del file appena scarcato tramite md5
                 if file.md5 == downloaded_md5:
                     output(self.out_lck, 'The downloaded file is intact')
+                    sound_success()
                 else:
                     output(self.out_lck, 'Something is wrong. Check the downloaded file')
+                    sound_error()
             else:
                 output(self.out_lck, 'Error: unknown response from directory.\n')
 
