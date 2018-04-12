@@ -193,8 +193,8 @@ class Peer_Server(threading.Thread):
 
                         while len(buff) == chunk_size:  # Invio dei chunks
                             try:
-                                msg = str(len(buff)).zfill(5) + str(buff)
-                                conn.sendall(msg.encode('utf-8'))  # Invio di
+                                msg = str(len(buff)).zfill(5).encode('utf-8') + buff
+                                conn.sendall(msg)  # Invio di
                                 chunks_sent += 1
 
                                 update_progress(self.output_lock, chunks_sent, n_chunks,
@@ -209,8 +209,8 @@ class Peer_Server(threading.Thread):
                         if len(buff) != 0:  # Invio dell'eventuale resto, se più piccolo di chunk_size
                             try:
 
-                                msg = str(len(buff)).zfill(5) + str(buff)
-                                conn.sendall(msg.encode('utf-8'))
+                                msg = str(len(buff)).zfill(5).encode('utf-8') + buff
+                                conn.sendall(msg)
 
                             except socket.error as msg:
                                 self.print_trigger.emit("Connection Error: %s" % msg, "11")
