@@ -117,7 +117,7 @@ class Client(object):
             self.print_trigger.emit("", "00")
 
             response_message = self.directory.recv(
-                7)  # Risposta della directory, deve contenere ALGO e il numero di file che erano stati condivisi
+                7).decode('ascii')  # Risposta della directory, deve contenere ALGO e il numero di file che erano stati condivisi
             self.print_trigger.emit(
                 '<= ' + str(self.directory.getpeername()[0]) + '  ' + response_message[0:4] + '  ' + response_message[4:7],
                 '02')
