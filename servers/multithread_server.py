@@ -64,7 +64,7 @@ class Server(threading.Thread, QtCore.QThread):
                                 c.start()
                                 self.threads.append(c)
                             except Exception as e:
-                                self.print_trigger.emit("Server Error: " + e, "11")
+                                self.print_trigger.emit("Server Error: " + str(e), "11")
 
                         elif port == self.port_peer:
                             try:
@@ -74,7 +74,7 @@ class Server(threading.Thread, QtCore.QThread):
                                 c.start()
                                 self.threads.append(c)
                             except Exception as e:
-                                self.print_trigger.emit("Server Error: " + e, "11")
+                                self.print_trigger.emit("Server Error: " + str(e), "11")
 
     def stop(self):
         # close all threads
