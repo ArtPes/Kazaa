@@ -215,7 +215,7 @@ class Peer_Server(threading.Thread):
                             except socket.error as msg:
                                 self.print_trigger.emit("Connection Error: %s" % msg, "11")
                             except Exception as e:
-                                self.print_trigger.emit('Error: ' + e, "11")
+                                self.print_trigger.emit('Error: ' + str(e), "11")
 
                         output(self.output_lock, "\r\nUpload Completed")
                         # tutto ok, su le mani parte il sound!!
@@ -224,7 +224,7 @@ class Peer_Server(threading.Thread):
                     except socket.error as msg:
                         self.print_trigger.emit("Connection Error: %s" % msg, "11")
                     except Exception as e:
-                        self.print_trigger.emit('Error: ' + e, "11")
+                        self.print_trigger.emit('Error: ' + str(e), "11")
                     except EOFError:
                         self.print_trigger.emit("Error: You have read a EOF char", "11")
 
