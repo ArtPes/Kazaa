@@ -51,16 +51,17 @@ def recvall(socket, chunk_size):
     :rtype: bytearray
     """
 
-    data = socket.recv(chunk_size).decode('ascii')  # Lettura di chunk_size byte dalla socket
+    data = socket.recv(chunk_size)  # Lettura di chunk_size byte dalla socket
     actual_length = len(data)
 
     # Se sono stati letti meno byte di chunk_size continua la lettura finchè non si raggiunge la dimensione specificata
     while actual_length < chunk_size:
-        new_data = socket.recv(chunk_size - actual_length).decode('ascii')
+        new_data = socket.recv(chunk_size - actual_length)
         actual_length += len(new_data)
         data += new_data
 
     return data
+
 
 
 def filesize(self, n):

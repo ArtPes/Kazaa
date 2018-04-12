@@ -62,8 +62,8 @@ class Peer_Server(threading.Thread):
 
                         msg = 'SUPE' + pktId + ipv4 + '|' + ipv6 + port + str(ttl).zfill(2)
                         for neighbor in neighbors:
-                            if not is_sender(self.address[0], supern['ipv4'], supern['ipv6']):
-                                sendTo(self.print_trigger, "1", supern['ipv4'], supern['ipv6'], supern['port'], msg)
+                            if not is_sender(self.address[0], neighbor['ipv4'], neighbor['ipv6']):
+                                sendTo(self.print_trigger, "1", neighbor['ipv4'], neighbor['ipv6'], neighbor['port'], msg)
                 elif visited:
                     self.print_trigger.emit("Packet " + pktId + "already passed by, will be ignored.", "10")
 
