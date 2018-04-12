@@ -24,6 +24,10 @@ class Main(QtCore.QThread):
 
         out_lck = threading.Lock()
         db = MongoConnection(out_lck)
+        db.refreshDB()
+
+        # inserisco luca come vicino
+        db.in1('172.016.004.002',"fc00:0000:0000:0000:0000:0000:0004:0003",'0600','0')
 
         output(out_lck, "Are you a supernode?")
         output(out_lck, "1: YES")

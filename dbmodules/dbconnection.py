@@ -506,3 +506,21 @@ class MongoConnection():
                 output(self.out_lck, "query got no results")
         else:
             output(self.out_lck, "query not found")
+
+    def refreshDB(self):
+        self.db.files.drop()
+        self.db.neighbors.drop()
+        self.db.searchFiles.drop()
+        self.db.searchPeers.drop()
+        self.db.registerPktIds.drop()
+
+
+    def in1(self, ipv4, ipv6, port, is_supernode):
+        """
+            Inserisce un vicino
+        """
+        self.db.neighbors.insert_one({"ipv4": ipv4,
+                                          "ipv6": ipv6,
+                                          "port": port,
+                                          "is_supernode": is_supernode
+                                          })
