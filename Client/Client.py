@@ -180,7 +180,7 @@ class Client(object):
                             try:
                                 self.check_connection()
 
-                                self.directory.send(msg)
+                                self.directory.send(msg.encode('utf-8'))
                                 self.print_trigger.emit(
                                     '=> ' + str(self.directory.getpeername()[0]) + '  ' + msg[0:4] + '  ' + self.session_id +
                                     '  ' + file.md5 + '  ' + file.name.ljust(100), "00")
@@ -236,8 +236,7 @@ class Client(object):
                             try:
                                 self.check_connection()
 
-                                self.directory.send(
-                                    msg)  # Richiesta di rimozione del file dalla directory, deve contenere session id e md5
+                                self.directory.send(msg.encode('utf-8'))  # Richiesta di rimozione del file dalla directory, deve contenere session id e md5
                                 self.print_trigger.emit(
                                     '=> ' + str(self.directory.getpeername()[0]) + '  ' + msg[0:4] + '  ' + self.session_id +
                                     '  ' + file.md5, "00")
@@ -276,7 +275,7 @@ class Client(object):
             try:
                 self.check_connection()
 
-                self.directory.send(msg)
+                self.directory.send(msg.encode('utf-8'))
                 self.print_trigger.emit(
                     '=> ' + str(self.directory.getpeername()[0]) + '  ' + msg[0:4] + '  ' + self.session_id +
                     '  ' + term.ljust(20), "00")
@@ -327,18 +326,14 @@ class Client(object):
                                 for idx in range(0, idmd5):  # Per ogni identificativo diverso si ricevono:
                                     # md5, nome del file, numero di copie, elenco dei peer che l'hanno condiviso
 
-                                    file_i_md5 = self.directory.recv(32)  # md5 dell'i-esimo file (32 caratteri)
-                                    file_i_name = self.directory.recv(
-                                        100).strip()  # nome dell'i-esimo file (100 caratteri compresi spazi)
-                                    file_i_copies = self.directory.recv(
-                                        3)  # numero di copie dell'i-esimo file (3 caratteri)
+                                    file_i_md5 = self.directory.recv(32).decode('ascii')  # md5 dell'i-esimo file (32 caratteri)
+                                    file_i_name = self.directory.recv(100).decode('ascii').strip()  # nome dell'i-esimo file (100 caratteri compresi spazi)
+                                    file_i_copies = self.directory.recv(3).decode('ascii')  # numero di copie dell'i-esimo file (3 caratteri)
                                     file_owners = []
-                                    for copy in range(0, int(
-                                            file_i_copies)):  # dati del j-esimo peer che ha condiviso l'i-esimo file
-                                        owner_j_ipv4 = self.directory.recv(16).replace("|",
-                                                                                       "")  # indirizzo ipv4 del j-esimo peer
-                                        owner_j_ipv6 = self.directory.recv(39)  # indirizzo ipv6 del j-esimo peer
-                                        owner_j_port = self.directory.recv(5)  # porta del j-esimo peer
+                                    for copy in range(0, int(file_i_copies)):  # dati del j-esimo peer che ha condiviso l'i-esimo file
+                                        owner_j_ipv4 = self.directory.recv(16).decode('ascii').replace("|", "")  # indirizzo ipv4 del j-esimo peer
+                                        owner_j_ipv6 = self.directory.recv(39).decode('ascii')  # indirizzo ipv6 del j-esimo peer
+                                        owner_j_port = self.directory.recv(5).decode('ascii')  # porta del j-esimo peer
 
                                         file_owners.append(Owner.Owner(owner_j_ipv4, owner_j_ipv6, owner_j_port))
 
@@ -375,16 +370,14 @@ class Client(object):
                                         except ValueError:
                                             output(self.out_lck, "A number is required")
 
-                                file_to_download = available_files[
-                                    selected_file]  # Recupero del file selezionato dalla lista dei risultati
+                                file_to_download = available_files[selected_file]  # Recupero del file selezionato dalla lista dei risultati
 
                                 output(self.out_lck, "Select a peer ('c' to cancel): ")
                                 for idx, file in enumerate(
                                         available_files):  # Visualizzazione la lista dei peer da cui è possibile scaricarlo
                                     if selected_file == idx:
                                         for idx2, owner in enumerate(file.owners):
-                                            print (str(
-                                                idx2) + ": " + owner.ipv4 + " | " + owner.ipv6 + " | " + owner.port)
+                                            print(str(idx2) + ": " + owner.ipv4 + " | " + owner.ipv6 + " | " + owner.port)
 
                                 selected_peer = None
                                 while selected_peer is None:
@@ -405,8 +398,7 @@ class Client(object):
 
                                 for idx2, owner in enumerate(file_to_download.owners):  # Download del file selezionato
                                     if selected_peer == idx2:
-                                        output(self.out_lck,
-                                               "Downloading file from: " + owner.ipv4 + " | " + owner.ipv6 + " " + owner.port)
+                                        output(self.out_lck, "Downloading file from: " + owner.ipv4 + " | " + owner.ipv6 + " " + owner.port)
                                         # self.print_trigger.emit(
                                         #     "Downloading file from: " + owner.ipv4 + " | " + owner.ipv6 + " " + owner.port,
                                         #     '00')
@@ -441,15 +433,14 @@ class Client(object):
         msg = 'RETR' + file.md5
 
         try:
-            download.send(msg)  # Richiesta di download al peer
+            download.send(msg.encode('utf-8'))  # Richiesta di download al peer
 
             self.print_trigger.emit('=> ' + str(download.getpeername()[0]) + '  ' + msg[0:4] + '  ' + file.md5, "00")
 
             # Spazio
             self.print_trigger.emit("", "00")
 
-            response_message = download.recv(
-                10)  # Risposta del peer, deve contenere il codice ARET seguito dalle parti del file
+            response_message = download.recv(10).decode('ascii')  # Risposta del peer, deve contenere il codice ARET seguito dalle parti del file
 
             self.print_trigger.emit('<= ' + str(download.getpeername()[0]) + '  ' + response_message[0:4] + '  ' + response_message[4:10], "02")
         except socket.error as e:
@@ -465,8 +456,7 @@ class Client(object):
 
                 filename = file.name
                 # TODO: cambiare sul mac con ../received
-                fout = open('received/' + filename,
-                            "wb")  # Apertura di un nuovo file in write byte mode (sovrascrive se già esistente)
+                fout = open('received/' + filename, "wb")  # Apertura di un nuovo file in write byte mode (sovrascrive se già esistente)
 
                 n_chunks = int(str(n_chunks).lstrip('0'))  # Rimozione gli 0 dal numero di parti e converte in intero
 
@@ -475,8 +465,7 @@ class Client(object):
                         output(self.out_lck, 'Download started...')
                         #self.print_trigger.emit('Download started...', '00')
 
-                    update_progress(self.out_lck, i, n_chunks,
-                                    'Downloading ' + fout.name)  # Stampa a video del progresso del download
+                    update_progress(self.out_lck, i, n_chunks, 'Downloading ' + fout.name)  # Stampa a video del progresso del download
 
                     try:
                         chunk_length = recvall(download, 5)  # Ricezione dal peer la lunghezza della parte di file
@@ -520,11 +509,10 @@ class Client(object):
 
         # Invio a TUTTI i vicini
         neighbors = self.dbConnect.get_neighbors()
-        if (len(neighbors) > 0):
+        if len(neighbors) > 0:
             # “SUPE”[4B].Pktid[16B].IPP2P[55B].PP2P[5B].TTL[2B]
             for neighbor in neighbors:
                 sendTo(self.print_trigger, "0", neighbor['ipv4'], neighbor['ipv6'], neighbor['port'], msg)
-
 
         # aspetto per 20s le risposte dei supernodi
         for i in range(0, 10):
