@@ -283,7 +283,7 @@ class Client(object):
                 # Spazio
                 self.print_trigger.emit("", "00")
 
-                response_message = self.directory.recv(4)
+                response_message = self.directory.recv(4).decode('ascii')
 
                 self.print_trigger.emit(
                     '<= ' + str(self.directory.getpeername()[0]) + '  ' + response_message[0:4],

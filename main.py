@@ -27,7 +27,7 @@ class Main(QtCore.QThread):
         db.refreshDB()
 
         # inserisco luca come vicino
-        db.in1('172.016.004.002',"fc00:0000:0000:0000:0000:0000:0004:0003",'0600','0')
+        #db.in1('172.016.004.001', "fc00:0000:0000:0000:0000:0000:0004:0001", '03000', '1')
 
         output(out_lck, "Are you a supernode?")
         output(out_lck, "1: YES")
