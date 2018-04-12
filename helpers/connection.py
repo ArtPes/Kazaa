@@ -31,8 +31,8 @@ class Connection:
         Crea una socket TCP selezionando un indirizzo a caso (con probabilità 50/50) tra ipv4 e ipv6
         Da utilizzare per le richieste alle directory
         """
-
-        if random.choice((True, False)):
+        if True:
+        #if random.choice((True, False)):
             self.ipv4 = remove_zero(self.ipv4)
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)                 # creazione socket ipv4
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

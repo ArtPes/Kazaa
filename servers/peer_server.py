@@ -33,7 +33,7 @@ class Peer_Server(threading.Thread):
 
     def run(self):
         conn = self.client
-        cmd = conn.recv(self.size)
+        cmd = conn.recv(self.size).decode('ascii')
         while len(cmd) > 0:
             if cmd[:4] == 'SUPE':
                 # “SUPE”[4B].Pktid[16B].IPP2P[55B].PP2P[5B].TTL[2B]
@@ -231,6 +231,6 @@ class Peer_Server(threading.Thread):
                     # Spazio
                     self.print_trigger.emit("", "10")
             else:
-                self.print_trigger.emit("Command not recognized", 11)
+                self.print_trigger.emit("Command not recognized", "11")
 
             cmd = conn.recv(self.size)

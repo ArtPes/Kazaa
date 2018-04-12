@@ -59,8 +59,8 @@ class Server(threading.Thread, QtCore.QThread):
                         if port == self.port_dir:
                             try:
                                 # handle the server socket
-                                c = directory_server.Directory_Server(item.accept(), self.dbConnect, self.output_lock, self.print_trigger, config.my_ipv4,
-                                                     config.my_ipv6, config.my_port, config.ttl, self.is_supernode)
+                                #conn, addr = item.accept()
+                                c = directory_server.Directory_Server(item.accept(), self.dbConnect, self.output_lock, self.print_trigger, config.my_ipv4, config.my_ipv6, config.my_port, config.ttl, self.is_supernode)
                                 c.start()
                                 self.threads.append(c)
                             except Exception as e:
@@ -69,8 +69,8 @@ class Server(threading.Thread, QtCore.QThread):
                         elif port == self.port_peer:
                             try:
                                 # handle the server socket
-                                c = peer_server.Peer_Server(item.accept(), self.dbConnect, self.output_lock, self.print_trigger, config.my_ipv4,
-                                                config.my_ipv6, config.my_port, config.ttl, self.is_supernode)
+                                conn, addr = item.accept()
+                                c = peer_server.Peer_Server(conn, addr, self.dbConnect, self.output_lock, self.print_trigger, config.my_ipv4, config.my_ipv6, config.my_port, config.ttl, self.is_supernode)
                                 c.start()
                                 self.threads.append(c)
                             except Exception as e:
