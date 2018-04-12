@@ -34,7 +34,6 @@ class Connection:
 
         if random.choice((True, False)):
             self.ipv4 = remove_zero(self.ipv4)
-
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)                 # creazione socket ipv4
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             try:
