@@ -6,7 +6,8 @@ import string
 import socket
 from helpers import connection
 import sys
-import time, pygame
+import time
+import pygame
 from ipaddr import *
 
 
