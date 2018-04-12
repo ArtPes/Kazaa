@@ -14,7 +14,7 @@ def sendTo(output_lock, ipv4, ipv6, port, msg):
         c.connect()
         peerSock = c.socket
 
-        peerSock.send(msg)
+        peerSock.send(msg.encode('utf-8'))
 
         output(output_lock, "\nMessage sent : ")
         output(output_lock, msg)

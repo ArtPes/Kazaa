@@ -20,7 +20,7 @@ def warns_directory(session_id, file_md5, directory):
 
     cmd = 'DREG' + session_id + file_md5
     try:
-        directory.sendall(cmd)                                                      # Notifica del download alla directory
+        directory.sendall(cmd.encode('utf-8'))                                                      # Notifica del download alla directory
         print('Message sent, waiting for response...')
         response_message = directory.recv(9)                                        # Risposta della directory, deve contenere il codice ADRE seguito dal numero totale di download
         print('Directory responded: ' + response_message)

@@ -109,7 +109,7 @@ class Client(object):
         try:
             self.check_connection()
 
-            self.directory.send(msg)  # Richeista di logout
+            self.directory.send(msg.encode('utf-8'))  # Richeista di logout
             self.print_trigger.emit('=> ' + str(self.directory.getpeername()[0]) + '  ' + msg[0:4] + '  ' + self.session_id,
                                     "00")
 

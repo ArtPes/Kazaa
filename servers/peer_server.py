@@ -187,14 +187,14 @@ class Peer_Server(threading.Thread):
                         msg = 'ARET' + str(n_chunks).zfill(
                             6)  # Risposta alla richiesta di download, deve contenere ARET ed il numero di chunks che saranno inviati
 
-                        conn.sendall(msg)
+                        conn.sendall(msg.encode('utf-8'))
                         self.print_trigger.emit("=> " + str(self.address[0]) + "  " + msg[0:4] + '  ' + msg[4:10], "12")
                         output(self.output_lock, "\r\nUpload Started")
 
                         while len(buff) == chunk_size:  # Invio dei chunks
                             try:
                                 msg = str(len(buff)).zfill(5) + str(buff)
-                                conn.sendall(msg)  # Invio di
+                                conn.sendall(msg.encode('utf-8'))  # Invio di
                                 chunks_sent += 1
 
                                 update_progress(self.output_lock, chunks_sent, n_chunks,
@@ -210,7 +210,7 @@ class Peer_Server(threading.Thread):
                             try:
 
                                 msg = str(len(buff)).zfill(5) + str(buff)
-                                conn.sendall(msg)
+                                conn.sendall(msg.encode('utf-8'))
 
                             except socket.error as msg:
                                 self.print_trigger.emit("Connection Error: %s" % msg, "11")
@@ -233,4 +233,4 @@ class Peer_Server(threading.Thread):
             else:
                 self.print_trigger.emit("Command not recognized", "11")
 
-            cmd = conn.recv(self.size)
+            cmd = conn.recv(self.size).decode('ascii')

@@ -172,7 +172,7 @@ class Client(threading.Thread):
                         for peer in file['peers']:
                             msg += peer['ipv4'] + '|' + peer['ipv6'] + peer['port']
 
-                    conn.send(msg)
+                    conn.send(msg.encode('utf-8'))
 
                 else:
                     conn.send('AFIN000')
