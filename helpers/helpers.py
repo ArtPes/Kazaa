@@ -9,6 +9,7 @@ import sys
 import time
 import pygame
 from ipaddr import *
+import config
 
 
 def hashfile(file, hasher, blocksize=65536):
@@ -251,3 +252,78 @@ def sound(file):
     pygame.init()
     sound = pygame.mixer.Sound(file)
     sound.play()
+
+def add_neighbor(output_lock, db):
+    group_number = None
+    output(output_lock, 'Insert group number:')
+
+    while group_number is None:
+        try:
+            option = input()
+        except SyntaxError:
+            option = None
+
+        if option is None:
+            output(output_lock, 'Please insert group number:')
+        else:
+            try:
+                group_number = int(option)
+            except ValueError:
+                output(output_lock, "A number is required")
+
+
+    member_number = None
+    output(output_lock, 'Insert member number:')
+    while member_number is None:
+        try:
+            option = input()
+        except SyntaxError:
+            option = None
+
+        if option is None:
+            output(output_lock, 'Please insert group number:')
+        else:
+            try:
+                member_number = int(option)
+            except ValueError:
+                output(output_lock, "A number is required")
+
+    port_number = None
+    output(output_lock, 'Insert port number:')
+    while port_number is None:
+        try:
+            option = input()
+        except SyntaxError:
+            option = None
+
+        if option is None:
+            output(output_lock, 'Please insert port number:')
+        else:
+            try:
+                port_number = int(option)
+            except ValueError:
+                output(output_lock, "A number is required")
+
+    is_superpeer = None
+    output(output_lock, 'Is it a supernode? (y/n)')
+    temp = input()
+    if temp.lower() == 'y':
+        is_superpeer = True
+    else:
+        is_superpeer = False
+
+    found = db.db.neighbors.find(
+        {"ipv4": config.partialIpv4 + str(group_number).zfill(3) + "." + str(member_number).zfill(3),
+         "ipv6": config.partialIpv6 + str(group_number).zfill(4) + ":" + str(member_number).zfill(4),
+         "port": str(port_number).zfill(5)}).count()
+
+    if not found:
+        db.db.neighbors.insert_one({"ipv4": config.partialIpv4 + str(group_number).zfill(3) + "." + str(member_number).zfill(3),
+                                    "ipv6": config.partialIpv6 + str(group_number).zfill(4) + ":" + str(
+                                     member_number).zfill(4),
+                                    "port": str(port_number).zfill(5), 'is_supernode': is_superpeer})
+        output(output_lock,
+               "Added neighbor " + "\t" + config.partialIpv4 + str(group_number).zfill(3) + "." + str(member_number).zfill(3) +
+               "\t" + config.partialIpv6 + str(group_number).zfill(4) + ":" + str(member_number).zfill(4) +
+               "\t " + str(port_number).zfill(5) + "\t" + "supernode: " + str(is_superpeer))
+

@@ -27,7 +27,7 @@ class Main(QtCore.QThread):
         db.refreshDB()
 
         # inserisco luca come vicino
-        db.in1('172.016.004.002',"fc00:0000:0000:0000:0000:0000:0004:0002",'03000','1')
+        add_neighbor(out_lck, db)
 
         output(out_lck, "Are you a supernode?")
         output(out_lck, "1: YES")
@@ -267,3 +267,5 @@ if __name__ == "__main__":
     main.start()
 
     sys.exit(app.exec_())
+
+
