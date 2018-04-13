@@ -200,7 +200,7 @@ class Directory_Server(threading.Thread):
                 # Spazio
                 self.print_trigger.emit("", "10")
 
-            elif cmd[:4] == 'DEFF':
+            elif cmd[:4] == 'DELF':
                 # “DEFF”[4B].SessionID[16B].Filemd5[32B]
                 sessId = cmd[4:20]
                 md5 = cmd[20:52]

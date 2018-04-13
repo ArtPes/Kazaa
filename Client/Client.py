@@ -230,7 +230,7 @@ class Client(object):
                             found = True
 
                             output(self.out_lck, "Removing file " + file.name)
-                            msg = 'DEFF' + self.session_id + file.md5
+                            msg = 'DELF' + self.session_id + file.md5
 
                             response_message = None
                             try:
