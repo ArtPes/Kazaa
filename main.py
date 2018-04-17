@@ -26,6 +26,14 @@ class Main(QtCore.QThread):
         db = MongoConnection(out_lck)
         db.refreshDB()
 
+        print("  _  __  ")
+        print(" | |/ /     ")
+        print(" | ' /    __ _   ____   __ _    __ _ ")
+        print(" |  <    / _` | |_  /  / _` |  / _` |")
+        print(" | . \  | (_| |  / /  | (_| | | (_| |")
+        print(" |_|\_\  \__,_| /___|  \__,_|  \__,_|")
+        print("")
+
         # inserisco un vicino che può essere un supernodo
         add_neighbor(out_lck, db)
 
