@@ -1,9 +1,6 @@
 # coding=utf-8
 import datetime
 import re
-import sys
-
-# sys.path.insert(1, '/home/massa/Documenti/PycharmProjects/P2PKazaa')
 from pymongo import MongoClient
 from helpers.helpers import *
 
@@ -114,7 +111,6 @@ class MongoConnection():
 
         if file is None:
             output(self.out_lck, "remove_file: file doesn't exist")
-            # TODO: return error
         else:
             # rimuovo il session_id dalla lista dei peer
             peers = list(file['peers'])
@@ -220,7 +216,7 @@ class MongoConnection():
                 self.db.packets.insert_one({"pktId": pktId})
                 return False
             except Exception as e:
-                output(self.out_lck, "insert_packet: " + e.message)
+                output(self.out_lck, "insert_packet: " + str(e))
 
     def get_sessions(self):
         """
@@ -254,7 +250,7 @@ class MongoConnection():
                                              })
                 return session_id
             except Exception as e:
-                output(self.out_lck, "insert_session: " + e.message)
+                output(self.out_lck, "insert_session: " + str(e))
                 return "0000000000000000"
 
     def remove_session(self, session_id):
@@ -292,7 +288,7 @@ class MongoConnection():
 
             return removed_files
         except Exception as e:
-            output(self.out_lck, "remove_session: " + e.message)
+            output(self.out_lck, "remove_session: " + str(e))
 
     def get_file_queries(self):
         """

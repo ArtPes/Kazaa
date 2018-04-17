@@ -1,9 +1,5 @@
 # coding=utf-8
-import hashlib
 import socket
-import helpers
-from helpers import connection
-from helpers.helpers import recvall
 
 
 def warns_directory(session_id, file_md5, directory):

@@ -1,8 +1,6 @@
 # coding=utf-8
-import time
 from Client import Owner
 from Client import SharedFile
-from helpers import connection
 from helpers.helpers import *
 
 
@@ -44,10 +42,8 @@ class Client(object):
 
 
         # Searching for shareable files
-        # TODO: cambiare sul mac con ../fileCondivisi
         for root, dirs, files in os.walk("fileCondivisi"):
             for file in files:
-                # TODO: cambiare sul mac con ../fileCondivisi
                 file_md5 = hashfile(open("fileCondivisi/" + file, 'rb'), hashlib.md5())
                 new_file = SharedFile.SharedFile(file, file_md5)
                 self.files_list.append(new_file)
@@ -63,28 +59,40 @@ class Client(object):
         response_message = None
         try:
             self.directory = None
-            c = connection.Connection(self.dir_ipv4, self.dir_ipv6, self.dir_port, self.print_trigger,
-                                      "0")  # Creazione connessione con la directory
+            c = connection.Connection(self.dir_ipv4, self.dir_ipv6, self.dir_port, self.print_trigger, "0")  # Creazione connessione con la directory
             c.connect()
             self.directory = c.socket
 
             self.directory.send(msg.encode('ascii'))  # Richiesta di login
-            self.print_trigger.emit(
-                '=> ' + str(self.directory.getpeername()[0]) + '  ' + msg[0:4] + '  ' + self.my_ipv4 + '  ' +
-                self.my_ipv6 + '  ' + str(self.my_port).zfill(5), "00")
+
+            # Stampo a video
+            self.print_trigger.emit("##############################################", "10")
+            self.print_trigger.emit("PACKET SENT", "10")
+            self.print_trigger.emit("\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tCommand: " + msg[0:4] +
+                                    "\n\tIPv4: " + self.my_ipv4 + "\n\tIPv6:" + self.my_ipv6 +
+                                    "\n\tPort: " + str(self.my_port).zfill(5), "00")
+            self.print_trigger.emit("##############################################", "10")
 
             # Spazio
             self.print_trigger.emit("", "00")
 
             response_message = self.directory.recv(20).decode('utf-8') # Risposta della directory, deve contenere ALGI e il session id
-            self.print_trigger.emit(
-                '<= ' + str(self.directory.getpeername()[0]) + '  ' + response_message[0:4] + '  ' + response_message[4:20],
-                '02')
+
+            # Stampo a video
+            self.print_trigger.emit("##############################################", "02")
+            self.print_trigger.emit("PACKET RECEIVED", "10")
+            self.print_trigger.emit("\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tResponse: " + response_message[0:4] +
+                                     "  " + response_message[4:20], "02")
+            self.print_trigger.emit("##############################################", "02")
 
         except socket.error as e:
+            self.print_trigger.emit("##############################################", "01")
             self.print_trigger.emit('Socket Error: ' + str(e), '01')
+            self.print_trigger.emit("##############################################", "01")
         except Exception as e:
+            self.print_trigger.emit("##############################################", "01")
             self.print_trigger.emit('Error: ' + str(e), '01')
+            self.print_trigger.emit("##############################################", "01")
 
         if response_message is None:
             output(self.out_lck, 'No response from directory. Login failed')
@@ -95,8 +103,9 @@ class Client(object):
             else:
                 output(self.out_lck, 'Session ID assigned by the directory: ' + self.session_id)
                 output(self.out_lck, 'Login completed')
+                self.print_trigger.emit("##############################################", "02")
                 self.print_trigger.emit('Login completed', '02')
-
+                self.print_trigger.emit("##############################################", "02")
     def logout(self):
         """
             Esegue il logout dalla directory a cui si è connessi
@@ -110,18 +119,25 @@ class Client(object):
             self.check_connection()
 
             self.directory.send(msg.encode('utf-8'))  # Richeista di logout
-            self.print_trigger.emit('=> ' + str(self.directory.getpeername()[0]) + '  ' + msg[0:4] + '  ' + self.session_id,
-                                    "00")
+            # Stampo a video
+            self.print_trigger.emit("##############################################", "10")
+            self.print_trigger.emit("PACKET SENT", "10")
+            self.print_trigger.emit("\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tCommand: " + msg[0:4] +
+                                    "\n\tSessionID: " + self.session_id, "00")
+            self.print_trigger.emit("##############################################", "10")
 
             # Spazio
             self.print_trigger.emit("", "00")
 
-            response_message = self.directory.recv(
-                7).decode('ascii')  # Risposta della directory, deve contenere ALGO e il numero di file che erano stati condivisi
-            self.print_trigger.emit(
-                '<= ' + str(self.directory.getpeername()[0]) + '  ' + response_message[0:4] + '  ' + response_message[4:7],
-                '02')
+            response_message = self.directory.recv(7).decode('ascii')  # Risposta della directory, deve contenere ALGO e il numero di file che erano stati condivisi
 
+            # Stampo a video
+            self.print_trigger.emit("##############################################", "02")
+            self.print_trigger.emit("PACKET RECEIVED", "10")
+            self.print_trigger.emit(
+                "\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tResponse: " + response_message[0:4] +
+                "  " + response_message[4:7], "02")
+            self.print_trigger.emit("##############################################", "02")
 
         except socket.error as e:
             self.print_trigger.emit('Socket Error: ' + str(e), '01')
@@ -181,9 +197,15 @@ class Client(object):
                                 self.check_connection()
 
                                 self.directory.send(msg.encode('utf-8'))
+
+                                # Stampo a video
+                                self.print_trigger.emit("##############################################", "00")
+                                self.print_trigger.emit("PACKET SENT", "10")
                                 self.print_trigger.emit(
-                                    '=> ' + str(self.directory.getpeername()[0]) + '  ' + msg[0:4] + '  ' + self.session_id +
-                                    '  ' + file.md5 + '  ' + file.name.ljust(100), "00")
+                                    "\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tCommand: " + msg[0:4] +
+                                    "\n\tSession ID: " + self.session_id + "\n\tMD5: " + file.md5 +
+                                    "\n\tFile Name: " + file.name.ljust(100), "00")
+                                self.print_trigger.emit("##############################################", "00")
 
                                 # Spazio
                                 self.print_trigger.emit("", "00")
@@ -237,9 +259,15 @@ class Client(object):
                                 self.check_connection()
 
                                 self.directory.send(msg.encode('utf-8'))  # Richiesta di rimozione del file dalla directory, deve contenere session id e md5
+
+                                # Stampo a video
+                                self.print_trigger.emit("##############################################", "00")
+                                self.print_trigger.emit("PACKET SENT", "10")
                                 self.print_trigger.emit(
-                                    '=> ' + str(self.directory.getpeername()[0]) + '  ' + msg[0:4] + '  ' + self.session_id +
-                                    '  ' + file.md5, "00")
+                                    "\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tCommand: " + msg[0:4] +
+                                    "\n\tSessionID: " + self.session_id +
+                                    "\n\tMD5: " + file.md5, "00")
+                                self.print_trigger.emit("##############################################", "00")
 
                                 # Spazio
                                 self.print_trigger.emit("", "00")
@@ -276,18 +304,27 @@ class Client(object):
                 self.check_connection()
 
                 self.directory.send(msg.encode('utf-8'))
+                # Stampo a video
+                self.print_trigger.emit("##############################################", "00")
+                self.print_trigger.emit("PACKET SENT", "10")
                 self.print_trigger.emit(
-                    '=> ' + str(self.directory.getpeername()[0]) + '  ' + msg[0:4] + '  ' + self.session_id +
-                    '  ' + term.ljust(20), "00")
+                    "\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tCommand: " + msg[0:4] +
+                    "\n\tSessionID: " + self.session_id +
+                    "\n\tSearch: " + term.ljust(20), "00")
+                self.print_trigger.emit("##############################################", "00")
 
                 # Spazio
                 self.print_trigger.emit("", "00")
 
                 response_message = self.directory.recv(4).decode('ascii')
 
+                # Stampo a video
+                self.print_trigger.emit("##############################################", "02")
+                self.print_trigger.emit("PACKET RECEIVED", "10")
                 self.print_trigger.emit(
-                    '<= ' + str(self.directory.getpeername()[0]) + '  ' + response_message[0:4],
-                    '02')
+                    "\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tResponse: " + response_message[0:4], "02")
+                self.print_trigger.emit("##############################################", "02")
+
             except socket.error as e:
                 # output(self.out_lck, 'Socket Error: ' + str(msg))
                 self.print_trigger.emit('Socket Error: ' + str(e), '01')
@@ -425,8 +462,7 @@ class Client(object):
         :type directory: object
         """
 
-        c = connection.Connection(host_ipv4, host_ipv6, host_port, self.print_trigger,
-                                  "0")  # Inizializzazione della connessione verso il peer
+        c = connection.Connection(host_ipv4, host_ipv6, host_port, self.print_trigger, "0")  # Inizializzazione della connessione verso il peer
         c.connect()
         download = c.socket
 
@@ -435,14 +471,27 @@ class Client(object):
         try:
             download.send(msg.encode('utf-8'))  # Richiesta di download al peer
 
-            self.print_trigger.emit('=> ' + str(download.getpeername()[0]) + '  ' + msg[0:4] + '  ' + file.md5, "00")
+            # Stampo a video
+            self.print_trigger.emit("##############################################", "00")
+            self.print_trigger.emit("PACKET SENT", "10")
+            self.print_trigger.emit(
+                "\tAddress: " + str(download.getpeername()[0])+ "\n\tCommand: " + msg[0:4] +
+                "\n\tMD5: " + file.md5, "00")
+            self.print_trigger.emit("##############################################", "00")
 
             # Spazio
             self.print_trigger.emit("", "00")
 
             response_message = download.recv(10).decode('ascii')  # Risposta del peer, deve contenere il codice ARET seguito dalle parti del file
 
-            self.print_trigger.emit('<= ' + str(download.getpeername()[0]) + '  ' + response_message[0:4] + '  ' + response_message[4:10], "02")
+            # Stampo a video response
+            self.print_trigger.emit("##############################################", "02")
+            self.print_trigger.emit("PACKET RECEIVED", "10")
+            self.print_trigger.emit(
+                "\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tResponse: " + response_message[0:4] +
+                "  " + response_message[4:10], "02")
+            self.print_trigger.emit("##############################################", "02")
+
         except socket.error as e:
             # output(self.out_lck, 'Error: ' + e.message)
             self.print_trigger.emit('Error: ' + str(e), '01')
@@ -455,7 +504,6 @@ class Client(object):
                 # tmp = 0
 
                 filename = file.name
-                # TODO: cambiare sul mac con ../received
                 fout = open('received/' + filename, "wb")  # Apertura di un nuovo file in write byte mode (sovrascrive se già esistente)
 
                 n_chunks = int(str(n_chunks).lstrip('0'))  # Rimozione gli 0 dal numero di parti e converte in intero
@@ -488,8 +536,7 @@ class Client(object):
                 output(self.out_lck, '\nDownload completed')
                 #self.print_trigger.emit('Download completed', '00')
                 output(self.out_lck, 'Checking file integrity...')
-                downloaded_md5 = hashfile(open(fout.name, 'rb'),
-                                          hashlib.md5())  # Controllo dell'integrità del file appena scarcato tramite md5
+                downloaded_md5 = hashfile(open(fout.name, 'rb'), hashlib.md5())  # Controllo dell'integrità del file appena scarcato tramite md5
                 if file.md5 == downloaded_md5:
                     output(self.out_lck, 'The downloaded file is intact')
                     sound_success()
@@ -504,8 +551,7 @@ class Client(object):
         output(self.out_lck, "Searching supernodes among neighbors...")
 
         pktId = id_generator(16)
-        msg = "SUPE" + str(pktId) + self.my_ipv4 + "|" + self.my_ipv6 + str(self.my_port).zfill(5) + str(
-            self.ttl).zfill(2)
+        msg = "SUPE" + str(pktId) + self.my_ipv4 + "|" + self.my_ipv6 + str(self.my_port).zfill(5) + str(self.ttl).zfill(2)
 
         # Invio a TUTTI i vicini
         neighbors = self.dbConnect.get_neighbors()
@@ -526,8 +572,7 @@ class Client(object):
 
     def check_connection(self):
         if not self.alive(self.directory):
-            c = connection.Connection(self.dir_ipv4, self.dir_ipv6, self.dir_port,
-                                      self.print_trigger, "0")  # Creazione connessione con la directory
+            c = connection.Connection(self.dir_ipv4, self.dir_ipv6, self.dir_port, self.print_trigger, "0")  # Creazione connessione con la directory
             c.connect()
             self.directory = c.socket
 
@@ -538,184 +583,3 @@ class Client(object):
         except Exception:
             pass
             return False
-
-    '''
-    def super_share(self):
-        """
-            Supernodo: Aggiunge un file alla mia directory rendendolo disponibile agli altri peer per il download
-        """
-
-        found = False
-        while not found:
-            output(self.out_lck, '\nSelect a file to share (\'c\' to cancel):')
-            for idx, file in enumerate(self.files_list):
-                output(self.out_lck, str(idx) + ": " + file.name)
-
-            try:
-                option = raw_input()  # Selezione del file da condividere tra quelli disponibili (nella cartella shareable)
-            except SyntaxError:
-                option = None
-
-            if option is None:
-                output(self.out_lck, 'Please select an option')
-            elif option == "c":
-                break
-            else:
-                try:
-                    int_option = int(option)
-                except ValueError:
-                    output(self.out_lck, "A number is required")
-                else:
-                    for idx, file in enumerate(self.files_list):  # Ricerca del file selezionato
-                        if idx == int_option:
-                            found = True
-
-                            output(self.out_lck, "Adding file to my directory" + file.name)
-                            self.dbConnect.share_file(self.session_id, file.md5, file.name)
-
-                    if not found:
-                        output(self.out_lck, 'Option not available')
-    '''
-
-    '''
-    def super_remove(self):
-        """
-            Supernodo: Rimuove un file condiviso nella mia directory
-        """
-
-        found = False
-        while not found:
-            output(self.out_lck, "\nSelect a file to remove ('c' to cancel):")
-            for idx, file in enumerate(self.files_list):
-                output(self.out_lck, str(idx) + ": " + file.name)
-            try:
-                option = raw_input()  # Selezione del file da rimuovere tra quelli disponibili (nella cartella shareable)
-            except SyntaxError:
-                option = None
-            except Exception:
-                option = None
-
-            if option is None:
-                output(self.out_lck, 'Please select an option')
-            elif option == "c":
-                break
-            else:
-                try:
-                    int_option = int(option)
-                except ValueError:
-                    output(self.out_lck, "A number is required")
-                else:
-                    for idx, file in enumerate(self.files_list):  # Ricerca del file selezionato
-                        if idx == int_option:
-                            found = True
-
-                            output(self.out_lck, "Removing file " + file.name)
-                            self.dbConnect.remove_file(self.session_id, file.md5)
-
-                    if not found:
-                        output(self.out_lck, 'Option not available')
-    '''
-
-    '''
-    def super_search_file(self):
-        """
-            Esegue la ricerca di una parola tra i file condivisi nella directory degli altri supernodi.
-            Dai risultati della ricerca sarà possibile scaricare il file.
-            Inserendo il termine '*' si richiedono tutti i file disponibili
-        """
-
-        output(self.out_lck, 'Insert search term:')
-        try:
-            term = raw_input()  # Inserimento del parametro di ricerca
-        except SyntaxError:
-            term = None
-        if term is None:
-            output(self.out_lck, 'Please insert a search term')
-        else:
-            output(self.out_lck, "Searching files that match: " + term)
-
-            #msg = 'FIND' + self.session_id + term.ljust(20)
-            #msg = 'QUER' + pktId + self.my_ipv4 + '|' + self.my_ipv6 + self.my_port + str(self.ttl) + term.ljust(20)
-
-            pktId = id_generator(16)
-            self.dbConnect.insert_file_query(pktId, term)
-
-            msg = 'QUER' + pktId + self.my_ipv4 + '|' + self.my_ipv6 + str(self.my_port).zfill(5) + str(self.ttl).zfill(2) + term.ljust(20)
-            #output(self.out_lck, 'Query message: ' + msg)
-            self.print_trigger.emit('Query message: ' + msg, '00')
-
-            supernodes = self.dbConnect.get_supernodes()
-
-            if (len(supernodes) > 0):
-                # “QUER”[4B].Pktid[16B].IPP2P[55B].PP2P[5B].TTL[2B].Ricerca[20B]          mando solo ai supernodi
-
-                for supern in supernodes:
-                    sendTo(self.out_lck, supern['ipv4'], supern['ipv6'], supern['port'], msg)
-
-                # aspetto per 20s le risposte dei supernodi
-                time.sleep(20)
-
-                available_files = list(self.dbConnect.get_file_query(pktId)['results'])
-
-                if available_files is not None:
-
-                    output(self.out_lck, "Select a file to download ('c' to cancel): ")
-                    for idx, file in enumerate(available_files):  # visualizza i risultati della ricerca
-                        output(self.out_lck, str(idx) + ": " + file['name'])
-
-                    selected_file = None
-                    while selected_file is None:
-                        try:
-                            option = raw_input()  # Selezione del file da scaricare
-                        except SyntaxError:
-                            option = None
-
-                        if option is None:
-                            output(self.out_lck, 'Please select an option')
-                        elif option == 'c':
-                            return
-                        else:
-                            try:
-                                selected_file = int(option)
-                            except ValueError:
-                                output(self.out_lck, "A number is required")
-
-                    file_to_download = available_files[
-                        selected_file]  # Recupero del file selezionato dalla lista dei risultati
-
-                    output(self.out_lck, "Select a peer ('c' to cancel): ")
-                    for idx, file in enumerate(
-                            available_files):  # Visualizzazione la lista dei peer da cui è possibile scaricarlo
-                        if selected_file == idx:
-                            for idx2, owner in enumerate(file['peers']):
-                                print str(idx2) + ": " + owner['ipv4'] + " | " + owner['ipv6'] + " | " + owner['port']
-
-                    selected_peer = None
-                    while selected_peer is None:
-                        try:
-                            option = raw_input()  # Selezione di un peer da cui scaricare il file
-                        except SyntaxError:
-                            option = None
-
-                        if option is None:
-                            output(self.out_lck, 'Please select an option')
-                        elif option == 'c':
-                            return
-                        else:
-                            try:
-                                selected_peer = int(option)
-                            except ValueError:
-                                output(self.out_lck, "A number is required")
-
-                    for idx2, owner in enumerate(file_to_download['peers']):  # Download del file selezionato
-                        if selected_peer == idx2:
-                            output(self.out_lck,
-                                   "Downloading file from: " + owner['ipv4'] + " | " + owner['ipv6'] + " | " + owner['port'])
-                            self.print_trigger.emit("Downloading file from: " + owner['ipv4'] + " | " + owner['ipv6'] + " | " + owner['port'], '00')
-
-                            f = SharedFile(file_to_download['name'], file_to_download['md5'], file_to_download['peers'])
-                            self.get_file(self.session_id, owner['ipv4'], owner['ipv6'], owner['port'], f)
-
-                else:
-                    output(self.out_lck, "No match found for the search term " + term)
-    '''

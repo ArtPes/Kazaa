@@ -1,7 +1,7 @@
 import random
 import sys
 import time
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 from GUI import main_window as MainWindow
 
@@ -22,7 +22,7 @@ class MyThread(QtCore.QThread):
 
     def run(self):
         time.sleep(random.random()*5)  # random sleep to imitate working
-        self.print_trigger.emit("prova", "mannaggia")
+
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

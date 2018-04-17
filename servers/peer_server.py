@@ -1,12 +1,6 @@
 # coding=utf-8
-import socket, os, hashlib, select, sys, time
-
-# sys.path.insert(1, '/home/massa/Documenti/PycharmProjects/P2PKazaa')
-from random import randint
 import threading
 from dbmodules.dbconnection import *
-from PyQt5 import QtCore, QtGui
-from helpers import *
 
 
 class Peer_Server(threading.Thread):
@@ -17,7 +11,6 @@ class Peer_Server(threading.Thread):
     """
 
     def __init__(self, client, address, dbConnect, output_lock, print_trigger, my_ipv4, my_ipv6, my_port, ttl, is_supernode):
-        #QtCore.QThread.__init__(self, parent=None)
         threading.Thread.__init__(self)
         self.client = client
         self.address = address
@@ -31,6 +24,7 @@ class Peer_Server(threading.Thread):
         self.ttl = ttl
         self.is_supernode = is_supernode
 
+
     def run(self):
         conn = self.client
         cmd = conn.recv(self.size).decode('ascii')
@@ -43,9 +37,12 @@ class Peer_Server(threading.Thread):
                 ipv6 = cmd[36:75]
                 port = cmd[75:80]
                 ttl = int(cmd[80:82])
-                self.print_trigger.emit(
-                    "<= " + str(self.address[0]) + "  " + cmd[0:4] + "  " + pktId + "  " + ipv4 + "  " + ipv6 +
-                    "  " + str(port).zfill(2) + "  " + str(ttl).zfill(2), "10")
+
+                self.print_trigger.emit("##############################################", "10")
+                self.print_trigger.emit("PACKET RECEIVED", "10")
+                self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + "\n\tPacket ID: " + pktId + "\n\tIPv4: " + ipv4 + "\n\tIPv6:" + ipv6 +
+                                        "\n\tPort: " + str(port).zfill(2) + "\n\tTTL:" + str(ttl).zfill(2), "10")
+                self.print_trigger.emit("##############################################", "10")
 
                 # Spazio
                 self.print_trigger.emit("", "10")
@@ -79,15 +76,16 @@ class Peer_Server(threading.Thread):
                 ipv4 = cmd[20:35]
                 ipv6 = cmd[36:75]
                 port = cmd[75:80]
-                self.print_trigger.emit("<= " + str(self.address[0]) + "  " + cmd[0:4] + "  " + pktId + "  " + ipv4 + "  " +
-                                        ipv6 + "  " + str(port).zfill(2), "10")
+                self.print_trigger.emit("##############################################", "10")
+                self.print_trigger.emit("PACKET RECEIVED", "10")
+                self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + "\n\tPacket ID: " + pktId + "\n\tIPv4: " + ipv4 + "\n\tIPv6:" + ipv6 +
+                                        "\n\tPort: " + str(port).zfill(2), "10")
+                self.print_trigger.emit("##############################################", "10")
 
                 # Spazio
                 self.print_trigger.emit("", "10")
 
-
                 self.dbConnect.insert_neighbor(ipv4, ipv6, port, "true")
-                #self.dbConnect.update_peer_query(pktId, ipv4, ipv6, port, "true")
 
             elif cmd[:4] == 'QUER':
                 # “QUER”[4B].Pktid[16B].IPP2P[55B].PP2P[5B].TTL[2B].Ricerca[20B]            ricevo solo dai supernodi
@@ -97,9 +95,13 @@ class Peer_Server(threading.Thread):
                 port = cmd[75:80]
                 ttl = int(cmd[80:82])
                 searchStr = cmd[82:102]
-                self.print_trigger.emit(
-                    "<= " + str(self.address[0]) + "  " + cmd[0:4] + "  " + pktId + "  " + ipv4 + "  " + ipv6 + "  " +
-                    str(port).zfill(2) + "  " + str(ttl).zfill(2) + "  " + searchStr, "10")
+
+                self.print_trigger.emit("##############################################", "10")
+                self.print_trigger.emit("PACKET RECEIVED", "10")
+                self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + "\n\tPacket ID: " + pktId + "\n\tIPv4: " + ipv4 + "\n\tIPv6:" + ipv6 +
+                                        "\n\tPort: " + str(port).zfill(2) + "\n\tTTL:" + str(ttl).zfill(2) +
+                                        "\n\tSearch String: " + searchStr, "10")
+                self.print_trigger.emit("##############################################", "10")
 
                 # Spazio
                 self.print_trigger.emit("", "10")
@@ -119,14 +121,14 @@ class Peer_Server(threading.Thread):
                                                       file['name']
                                         sendTo(self.print_trigger, "1", ipv4, ipv6, port, msgComplete)
                 elif visited:
-                    self.print_trigger.emit("Packet " + pktId + "already passed by, will be ignored.", "10")
 
+                    self.print_trigger.emit("Packet " + pktId + "already passed by, will be ignored.", "10")
 
                 if ttl > 1 and not visited:
                     ttl -= 1
                     supernodes = self.dbConnect.get_supernodes()
 
-                    if (len(supernodes) > 0):
+                    if len(supernodes) > 0:
                         # “QUER”[4B].Pktid[16B].IPP2P[55B].PP2P[5B].TTL[2B].Ricerca[20B]          mando solo ai supernodi
 
                         msg = 'QUER' + pktId + ipv4 + '|' + ipv6 + port + str(ttl).zfill(2) + searchStr
@@ -142,9 +144,12 @@ class Peer_Server(threading.Thread):
                 port = cmd[75:80]
                 md5 = cmd[80:112]
                 fname = cmd[112:212]
-                self.print_trigger.emit(
-                    "<= " + str(self.address[0]) + "  " + cmd[0:4] + "  " + pktId + "  " + ipv4 + "  " + ipv6 + "  " +
-                    str(port).zfill(2) + "  " + md5 + "  " + fname, "10")
+
+                self.print_trigger.emit("##############################################", "10")
+                self.print_trigger.emit("PACKET RECEIVED", "10")
+                self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + "\n\tPacket ID: " + pktId + "\n\tIPv4: " + ipv4 + "\n\tIPv6:" + ipv6 +
+                                        "\n\tPort: " + str(port).zfill(2) + "\n\tMD5:" + str(md5) + "\n\tFilename: " + fname, "10")
+                self.print_trigger.emit("##############################################", "10")
 
                 self.dbConnect.update_file_query(pktId, md5, fname, ipv4, ipv6, port)
 
@@ -154,8 +159,10 @@ class Peer_Server(threading.Thread):
             elif cmd[:4] == 'RETR':
                 md5Remoto = cmd[4:36]
 
-                self.print_trigger.emit(
-                    "<= " + str(self.address[0]) + "  " + cmd[0:4] + "  " + md5Remoto, "10")
+                self.print_trigger.emit("##############################################", "10")
+                self.print_trigger.emit("PACKET RECEIVED", "10")
+                self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + "\n\tRemote MD5: " + md5Remoto, "10")
+                self.print_trigger.emit("##############################################", "10")
 
                 # Spazio
                 self.print_trigger.emit("", "10")
@@ -163,12 +170,13 @@ class Peer_Server(threading.Thread):
                 file = self.dbConnect.get_file(md5Remoto)
                 fileFd = None
                 try:
-                    # TODO: cambiare sul mac con ../fileCondivisi
                     fileFd = open("fileCondivisi/" + file['name'], "rb")
                 except Exception as e:
-                    self.print_trigger.emit('File Error: ' + e + "\n", "11")
+                    self.print_trigger.emit("##############################################", "11")
+                    self.print_trigger.emit('File Error: ' + str(e) + "\n", "11")
+                    self.print_trigger.emit("##############################################", "11")
+
                 else:
-                    # TODO: cambiare sul mac con ../fileCondivisi
                     tot_dim = os.stat("fileCondivisi/" + file['name']).st_size  # Calcolo delle dimesioni del file
                     n_chunks = int(tot_dim // 1024)  # Calcolo del numero di parti
                     resto = tot_dim % 1024  # Eventuale resto
@@ -184,11 +192,14 @@ class Peer_Server(threading.Thread):
 
                         buff = fileFd.read(chunk_size)  # Lettura del primo chunk
 
-                        msg = 'ARET' + str(n_chunks).zfill(
-                            6)  # Risposta alla richiesta di download, deve contenere ARET ed il numero di chunks che saranno inviati
+                        msg = 'ARET' + str(n_chunks).zfill(6)  # Risposta alla richiesta di download, deve contenere ARET ed il numero di chunks che saranno inviati
 
                         conn.sendall(msg.encode('utf-8'))
-                        self.print_trigger.emit("=> " + str(self.address[0]) + "  " + msg[0:4] + '  ' + msg[4:10], "12")
+                        self.print_trigger.emit("##############################################", "12")
+                        self.print_trigger.emit("PACKET SENT", "12")
+                        self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + msg[0:4] + "  " + msg[4:10], "12")
+                        self.print_trigger.emit("##############################################", "12")
+
                         output(self.output_lock, "\r\nUpload Started")
 
                         while len(buff) == chunk_size:  # Invio dei chunks
@@ -197,14 +208,18 @@ class Peer_Server(threading.Thread):
                                 conn.sendall(msg)  # Invio di
                                 chunks_sent += 1
 
-                                update_progress(self.output_lock, chunks_sent, n_chunks,
-                                                'Uploading ' + fileFd.name)  # Stampa a video del progresso dell'upload
+                                update_progress(self.output_lock, chunks_sent, n_chunks, 'Uploading ' + fileFd.name)  # Stampa a video del progresso dell'upload
 
                                 buff = fileFd.read(chunk_size)  # Lettura chunk successivo
                             except socket.error as msg:
+                                self.print_trigger.emit("##############################################", "11")
                                 self.print_trigger.emit("Connection Error: %s" % msg, "11")
+                                self.print_trigger.emit("##############################################", "11")
+
                             except Exception as e:
-                                self.print_trigger.emit('Error: ' + e, "11")
+                                self.print_trigger.emit("##############################################", "11")
+                                self.print_trigger.emit('Error: ' + str(e), "11")
+                                self.print_trigger.emit("##############################################", "11")
 
                         if len(buff) != 0:  # Invio dell'eventuale resto, se più piccolo di chunk_size
                             try:
@@ -213,24 +228,32 @@ class Peer_Server(threading.Thread):
                                 conn.sendall(msg)
 
                             except socket.error as msg:
+                                self.print_trigger.emit("##############################################", "11")
                                 self.print_trigger.emit("Connection Error: %s" % msg, "11")
+                                self.print_trigger.emit("##############################################", "11")
+
                             except Exception as e:
+                                self.print_trigger.emit("##############################################", "11")
                                 self.print_trigger.emit('Error: ' + str(e), "11")
+                                self.print_trigger.emit("##############################################", "11")
 
                         output(self.output_lock, "\r\nUpload Completed")
                         # tutto ok, su le mani parte il sound!!
                         sound_success()
                         fileFd.close()  # Chiusura del file
                     except socket.error as msg:
+                        self.print_trigger.emit("##############################################", "11")
                         self.print_trigger.emit("Connection Error: %s" % msg, "11")
+                        self.print_trigger.emit("##############################################", "11")
                     except Exception as e:
+                        self.print_trigger.emit("##############################################", "11")
                         self.print_trigger.emit('Error: ' + str(e), "11")
-                    except EOFError:
-                        self.print_trigger.emit("Error: You have read a EOF char", "11")
-
+                        self.print_trigger.emit("##############################################", "11")
                     # Spazio
                     self.print_trigger.emit("", "10")
             else:
+                self.print_trigger.emit("##############################################", "11")
                 self.print_trigger.emit("Command not recognized", "11")
+                self.print_trigger.emit("##############################################", "11")
 
             cmd = conn.recv(self.size).decode('ascii')

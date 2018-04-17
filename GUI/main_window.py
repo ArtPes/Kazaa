@@ -14,7 +14,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         super(Ui_MainWindow, self).__init__(parent)
         self.setObjectName("MainWindow")
         self.resize(1360, 450)
-        self.setMaximumSize(QtCore.QSize(1360, 450))
+        #self.setMaximumSize(QtCore.QSize(1360, 450))
         self.centralwidget = QtWidgets.QWidget(self)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
@@ -68,28 +68,40 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
     def print_on_main_panel(self, message, color):
         if color == "10":
-            self.server.setTextColor(QtGui.QColor('black'))
+            self.server.setTextColor(QtGui.QColor('orange'))
+            newfont = QtGui.QFont("Times", 11, QtGui.QFont.Bold)
+            self.server.setFont(newfont)
             self.server.append(message)
         elif color == "11":
             self.server.setTextColor(QtGui.QColor('red'))
+            newfont = QtGui.QFont("Times", 11, QtGui.QFont.Bold)
+            self.server.setFont(newfont)
             self.server.append(message)
         elif color == "12":
             self.server.setTextColor(QtGui.QColor('green'))
+            newfont = QtGui.QFont("Times", 11, QtGui.QFont.Bold)
+            self.server.setFont(newfont)
             self.server.append(message)
         elif color == "00":
-            self.client.setTextColor(QtGui.QColor('black'))
+            self.client.setTextColor(QtGui.QColor('orange'))
+            newfont = QtGui.QFont("Times", 11, QtGui.QFont.Bold)
+            self.server.setFont(newfont)
             self.client.append(message)
         elif color == "01":
             self.client.setTextColor(QtGui.QColor('red'))
+            newfont = QtGui.QFont("Times", 11, QtGui.QFont.Bold)
+            self.server.setFont(newfont)
             self.client.append(message)
         elif color == "02":
             self.client.setTextColor(QtGui.QColor('green'))
+            newfont = QtGui.QFont("Times", 11, QtGui.QFont.Bold)
+            self.server.setFont(newfont)
             self.client.append(message)
 
 '''
-0 stampa sul terminale Client in nero
+0 stampa sul terminale Client in blu
 1 stampa sul terminale Client in rosso
 
-10 stampa sul terminale Server in nero
+10 stampa sul terminale Server in blu
 11 stampa sul terminale Server in rosso
 '''

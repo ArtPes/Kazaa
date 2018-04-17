@@ -1,14 +1,12 @@
 # coding=utf-8
-import socket, os, hashlib, select, sys, time
-
-#sys.path.insert(1, '/home/massa/Documenti/PycharmProjects/P2PKazaa')
+import socket, select, sys
 import threading
-
 from dbmodules.dbconnection import MongoConnection
 from servers import peer_server
 from servers import directory_server
 import config
-from PyQt5 import QtGui, QtCore
+from PyQt5 import QtCore
+
 
 class Server(threading.Thread, QtCore.QThread):
     print_trigger = QtCore.pyqtSignal(str, str)
@@ -30,8 +28,10 @@ class Server(threading.Thread, QtCore.QThread):
         self.is_supernode = is_supernode
 
     def run(self):
-
+        self.print_trigger.emit("##############################################", "10")
         self.print_trigger.emit("Starting server...", "10")
+        self.print_trigger.emit("##############################################", "10")
+
         try:
             for item in self.port_dir, self.port_peer:
                 self.sock_lst.append(socket.socket(socket.AF_INET6, socket.SOCK_STREAM))
@@ -43,11 +43,15 @@ class Server(threading.Thread, QtCore.QThread):
             if self.sock_lst[-1]:
                 self.sock_lst[-1].close()
                 self.sock_lst = self.sock_lst[:-1]
+                self.print_trigger.emit("##############################################", "11")
                 self.print_trigger.emit("Could not open socket", "11")
+                self.print_trigger.emit("##############################################", "11")
             sys.exit(1)
 
         self.running = 1
+        self.print_trigger.emit("##############################################", "10")
         self.print_trigger.emit("Server running", "10")
+        self.print_trigger.emit("##############################################", "10")
         while self.running:
             inputready, outputready, exceptready = select.select(self.sock_lst, [], [])
 
@@ -64,7 +68,10 @@ class Server(threading.Thread, QtCore.QThread):
                                 c.start()
                                 self.threads.append(c)
                             except Exception as e:
+                                self.print_trigger.emit("##############################################", "11")
                                 self.print_trigger.emit("Server Error: " + str(e), "11")
+                                self.print_trigger.emit("##############################################", "11")
+
 
                         elif port == self.port_peer:
                             try:
@@ -74,11 +81,11 @@ class Server(threading.Thread, QtCore.QThread):
                                 c.start()
                                 self.threads.append(c)
                             except Exception as e:
+                                self.print_trigger.emit("##############################################", "11")
                                 self.print_trigger.emit("Server Error: " + str(e), "11")
+                                self.print_trigger.emit("##############################################", "11")
 
     def stop(self):
-        # close all threads
-
         self.running = 0
 
         for item in self.sock_lst:

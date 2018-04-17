@@ -1,6 +1,5 @@
 # coding=utf-8
 import select
-#sys.path.insert(1,'/home/massa/Documenti/PycharmProjects/P2PKazaa')
 import threading
 from dbmodules.dbconnection import *
 from supernodoServer.commandFile import *
@@ -30,15 +29,7 @@ class Client(threading.Thread):
             #“SUPE”[4B].Pktid[16B].IPP2P[55B].PP2P[5B].TTL[2B]
             #“ASUP”[4B].Pktid[16B].IPP2P[39B].PP2P[5B]
             pass
-            """
-            output(self.output_lock, "\nMessagge received: ")
-            output(self.output_lock,
-                   cmd[0:4] + "\t" + cmd[4:20] + "\t" + cmd[20:35] + "\t" + cmd[36:75] + "\t" + cmd[76:80] + "\t" +
-                                                                                    cmd[80:82])
-            msg = 'ASUP' + cmd[4:20] + my_ipv4 + '|' + my_ipv6 + my_port
 
-            sendAckSuper(msg)
-            """
 
         elif cmd[:4] == 'LOGI':
             #“LOGI”[4B].IPP2P[55B].PP2P[5B]
@@ -201,7 +192,7 @@ class Server(threading.Thread):
         except socket.error as message:
             if self.server:
                 self.server.close()
-            output(self.output_lock, "Server_open_socket: Could not open socket: " + message)
+            output(self.output_lock, "Server_open_socket: Could not open socket: " + str(message))
             sys.exit(1)
 
     def run(self):
@@ -220,10 +211,9 @@ class Server(threading.Thread):
                             c.start()
                             self.threads.append(c)
                         except Exception as e:
-                            output(self.output_lock, "Server_run_socket: " + e)
+                            output(self.output_lock, "Server_run_socket: " + str(e))
         except Exception as e:
-            output(self.output_lock, 'Server_run_socket: ' + e)
-
+            output(self.output_lock, 'Server_run_socket: ' + str(e))
 
     def stop(self):
         # close all threads

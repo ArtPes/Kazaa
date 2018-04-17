@@ -1,5 +1,5 @@
 # coding=utf-8
-import sys, socket, random, string
+import socket, random, string
 from helpers.connection import Connection
 
 
@@ -28,8 +28,10 @@ def sendTo(output_lock, ipv4, ipv6, port, msg):
     except Exception as e:
         output(output_lock, 'send_near-Error: ' + str(e))
 
+
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
+
 
 def output(lock, message):
     lock.acquire()

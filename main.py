@@ -6,11 +6,8 @@ from servers import multithread_server
 from dbmodules.dbconnection import *
 from helpers.helpers import *
 import config
-from PyQt5 import QtCore, QtWidgets
 from GUI.ui import *
-from GUI.main_window import Ui_MainWindow
 from GUI import main_window
-#sys.path.insert(1, '/Users/stefano/Desktop/P2Pkazaa')
 
 
 class Main(QtCore.QThread):

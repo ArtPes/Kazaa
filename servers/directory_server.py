@@ -9,10 +9,6 @@ class Directory_Server(threading.Thread):
         Peer: non utilizzata
     """
 
-    # def __init__(self, (client, address), dbConnect, output_lock, print_trigger, my_ipv4, my_ipv6, my_port, ttl,
-    #             is_supernode):
-
-    # in python 3 dovrebbe essere così:
     def __init__(self, arg, dbConnect, output_lock, print_trigger, my_ipv4, my_ipv6, my_port, ttl, is_supernode):
         # QtCore.QThread.__init__(self, parent=None)
         threading.Thread.__init__(self)
@@ -43,8 +39,11 @@ class Directory_Server(threading.Thread):
                 port = cmd[75:80]
                 ttl = int(cmd[80:82])
                 # Stampo a video
-                self.print_trigger.emit("<= " + str(self.address[0]) + "  " + cmd[0:4] + "  " + pktId + "  " + ipv4
-                                        + "  " + ipv6 + "  " + str(port).zfill(5) + "  " + str(ttl).zfill(2), "10")
+                self.print_trigger.emit("##############################################", "10")
+                self.print_trigger.emit("PACKET RECEIVED", "10")
+                self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + "\n\tPacket ID: " + pktId + "\n\tIPv4: " + ipv4 + "\n\tIPv6:" + ipv6 +
+                                        "\n\tPort: " + str(port).zfill(5) + "\n\tTTL:" + str(ttl).zfill(2), "10")
+                self.print_trigger.emit("##############################################", "10")
 
                 # Spazio
                 self.print_trigger.emit("", "10")
@@ -66,8 +65,9 @@ class Directory_Server(threading.Thread):
                                 sendTo(self.print_trigger, "1", neighbor['ipv4'], neighbor['ipv6'], neighbor['port'], msg)
 
                 elif visited:
+                    self.print_trigger.emit("##############################################", "10")
                     self.print_trigger.emit("Packet " + pktId + " already passed by, will be ignored.", "10")
-
+                    self.print_trigger.emit("##############################################", "10")
                 # Se sono supernodo rispondo
                 if self.is_supernode and not visited:
                     msg = "ASUP" + pktId + self.my_ipv4 + "|" + self.my_ipv6 + str(3000).zfill(5)
@@ -82,9 +82,13 @@ class Directory_Server(threading.Thread):
                 ipv4 = cmd[20:35]
                 ipv6 = cmd[36:75]
                 port = cmd[75:80]
-                self.print_trigger.emit(
-                    "<= " + str(self.address[0]) + "  " + cmd[0:4] + "  " + pktId + "  " + ipv4 + "  " +
-                    ipv6 + "  " + str(port).zfill(5), "10")
+
+                # Stampo a video
+                self.print_trigger.emit("##############################################", "10")
+                self.print_trigger.emit("PACKET RECEIVED", "10")
+                self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + "\n\tPacket ID: " + pktId + "\n\tIPv4: " + ipv4 + "\n\tIPv6:" + ipv6 +
+                                        "\n\tPort: " + str(port).zfill(5), "10")
+                self.print_trigger.emit("##############################################", "10")
 
                 self.dbConnect.insert_neighbor(ipv4, ipv6, port, "true")
                 # self.dbConnect.update_peer_query(pktId, ipv4, ipv6, port, "true")
@@ -101,9 +105,14 @@ class Directory_Server(threading.Thread):
                 port = cmd[75:80]
                 ttl = int(cmd[80:82])
                 searchStr = cmd[82:102]
-                self.print_trigger.emit(
-                    "<= " + str(self.address[0]) + "  " + cmd[0:4] + "  " + pktId + "  " + ipv4 + "  " + ipv6 + "  " +
-                    str(port) + "  " + str(ttl).zfill(2) + "  " + searchStr, "10")
+
+                # Stampo a video
+                self.print_trigger.emit("##############################################", "10")
+                self.print_trigger.emit("PACKET RECEIVED", "10")
+                self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + "\n\tPacket ID: " + pktId + "\n\tIPv4: " + ipv4 + "\n\tIPv6:" + ipv6 +
+                                        "\n\tPort: " + str(port).zfill(5) + "\n\tTTL:" + str(ttl).zfill(2) + "\n\tSearch str: " + searchStr, "10")
+                self.print_trigger.emit("##############################################", "10")
+
 
                 # Spazio
                 self.print_trigger.emit("", "10")
@@ -124,7 +133,9 @@ class Directory_Server(threading.Thread):
 
                                         sendTo(self.print_trigger, "1", ipv4, ipv6, port, msgComplete)
                 elif visited:
+                    self.print_trigger.emit("##############################################", "10")
                     self.print_trigger.emit("Packet " + pktId + " already passed by, will be ignored.", "10")
+                    self.print_trigger.emit("##############################################", "10")
 
                 if ttl > 1 and not visited:
                     ttl -= 1
@@ -149,9 +160,13 @@ class Directory_Server(threading.Thread):
                 port = cmd[75:80]
                 md5 = cmd[80:112]
                 fname = cmd[112:212]
-                self.print_trigger.emit(
-                    "<= " + str(self.address[0]) + "  " + cmd[0:4] + "  " + pktId + "  " + ipv4 + "  " + ipv6 + "  " +
-                    str(port) + "  " + md5 + "  " + fname, "10")
+
+                # Stampo a video
+                self.print_trigger.emit("##############################################", "10")
+                self.print_trigger.emit("PACKET RECEIVED", "10")
+                self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + "\n\tPacket ID: " + pktId + "\n\tIPv4: " + ipv4 + "\n\tIPv6:" + ipv6 +
+                                        "\n\tPort: " + str(port).zfill(5) + "\n\tMD5:" + md5 + "\n\tFile Name: " + fname, "10")
+                self.print_trigger.emit("##############################################", "10")
 
                 self.dbConnect.update_file_query(pktId, md5, fname, ipv4, ipv6, port)
 
@@ -164,8 +179,13 @@ class Directory_Server(threading.Thread):
                 ipv4 = cmd[4:19]
                 ipv6 = cmd[20:59]
                 port = cmd[59:64]
-                self.print_trigger.emit(
-                    "<= " + str(self.address[0]) + "  " + cmd[:4] + '  ' + ipv4 + '  ' + ipv6 + '  ' + str(port), "10")
+
+                # Stampo a video
+                self.print_trigger.emit("##############################################", "10")
+                self.print_trigger.emit("PACKET RECEIVED", "10")
+                self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + "\n\tIPv4: " + ipv4 + "\n\tIPv6:" + ipv6 +
+                                        "\n\tPort: " + str(port).zfill(5), "10")
+                self.print_trigger.emit("##############################################", "10")
 
                 # Spazio
                 self.print_trigger.emit("", "10")
@@ -176,11 +196,19 @@ class Directory_Server(threading.Thread):
 
                 try:
                     conn.send(msg.encode('utf-8'))
-                    self.print_trigger.emit("=> " + str(self.address[0]) + "  " + msg[0:4] + '  ' + sessionId, "12")
+                    # Stampo a video
+                    self.print_trigger.emit("##############################################", "12")
+                    self.print_trigger.emit("PACKET SENT", "12")
+                    self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + "\n\tSession ID:" + sessionId, "12")
+                    self.print_trigger.emit("##############################################", "12")
                 except socket.error as e:
+                    self.print_trigger.emit("##############################################", "11")
                     self.print_trigger.emit("Connection Error: %s" % str(e), "11")
+                    self.print_trigger.emit("##############################################", "11")
                 except Exception as e:
+                    self.print_trigger.emit("##############################################", "11")
                     self.print_trigger.emit('Error: ' + str(e), "11")
+                    self.print_trigger.emit("##############################################", "11")
 
                 # Spazio
                 self.print_trigger.emit("", "10")
@@ -190,12 +218,17 @@ class Directory_Server(threading.Thread):
                 sessId = cmd[4:20]
                 md5 = cmd[20:52]
                 fname = cmd[52:152].strip(" ")
-                self.print_trigger.emit(
-                    "<= " + str(self.address[0]) + "  " + cmd[0:4] + "  " + sessId + "  " + md5 + "  " + fname, "10")
+
+                # Stampo a video
+                self.print_trigger.emit("##############################################", "10")
+                self.print_trigger.emit("PACKET RECEIVED", "10")
+                self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + "\n\tSession ID: " + sessId + "\n\tMD5: " + md5 + "\n\tFile Name:" + fname , "10")
+                self.print_trigger.emit("##############################################", "10")
 
                 self.dbConnect.share_file(sessId, md5, fname)
-
+                self.print_trigger.emit("##############################################", "12")
                 self.print_trigger.emit("File succesfully shared by " + str(self.address[0]), "12")
+                self.print_trigger.emit("##############################################", "12")
 
                 # Spazio
                 self.print_trigger.emit("", "10")
@@ -204,11 +237,16 @@ class Directory_Server(threading.Thread):
                 # “DEFF”[4B].SessionID[16B].Filemd5[32B]
                 sessId = cmd[4:20]
                 md5 = cmd[20:52]
-                self.print_trigger.emit("<= " + str(self.address[0]) + "  " + cmd[0:4] + "  " + sessId + "  " + md5, "10")
+                # Stampo a video
+                self.print_trigger.emit("##############################################", "10")
+                self.print_trigger.emit("PACKET RECEIVED", "10")
+                self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + "\n\tSession ID: " + sessId + "\n\tMD5: " + md5, "10")
+                self.print_trigger.emit("##############################################", "10")
 
                 self.dbConnect.remove_file(sessId, md5)
-
+                self.print_trigger.emit("##############################################", "12")
                 self.print_trigger.emit("File succesfully removed by " + str(self.address[0]), "12")
+                self.print_trigger.emit("##############################################", "12")
 
                 # Spazio
                 self.print_trigger.emit("", "10")
@@ -217,7 +255,11 @@ class Directory_Server(threading.Thread):
                 # “LOGO”[4B].SessionID[16B]
                 # “ALGO”[4B].#delete[3B]
                 sessId = cmd[4:20]
-                self.print_trigger.emit("<= " + str(self.address[0]) + "  " + cmd[0:4] + "  " + sessId, "10")
+                # Stampo a video
+                self.print_trigger.emit("##############################################", "10")
+                self.print_trigger.emit("PACKET RECEIVED", "10")
+                self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + "\n\tSession ID: " + sessId, "10")
+                self.print_trigger.emit("##############################################", "10")
 
                 # Spazio
                 self.print_trigger.emit("", "10")
@@ -227,14 +269,21 @@ class Directory_Server(threading.Thread):
                 msg = 'ALGO' + str(delete).zfill(3)
 
                 try:
-
                     conn.send(msg.encode('utf-8'))
-                    self.print_trigger.emit("=> " + str(self.address[0]) + "  " + msg[0:4] + '  ' + msg[4:7], "12")
+                    # Stampo a video
+                    self.print_trigger.emit("##############################################", "12")
+                    self.print_trigger.emit("PACKET SENT", "12")
+                    self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + " " + msg[4:7], "12")
+                    self.print_trigger.emit("##############################################", "12")
 
                 except socket.error as e:
+                    self.print_trigger.emit("##############################################", "11")
                     self.print_trigger.emit("Connection Error: %s" % str(e), "11")
+                    self.print_trigger.emit("##############################################", "11")
                 except Exception as e:
+                    self.print_trigger.emit("##############################################", "11")
                     self.print_trigger.emit('Error: ' + str(e), "11")
+                    self.print_trigger.emit("##############################################", "11")
 
                 # Spazio
                 self.print_trigger.emit("", "10")
@@ -246,8 +295,12 @@ class Directory_Server(threading.Thread):
 
                 sessId = cmd[4:20]
                 searchStr = cmd[20:40]
-                self.print_trigger.emit("<= " + str(self.address[0]) + "  " + cmd[0:4] + "  " + sessId + "  " + searchStr,
-                                        "10")
+
+                # Stampo a video
+                self.print_trigger.emit("##############################################", "10")
+                self.print_trigger.emit("PACKET RECEIVED", "10")
+                self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + "\n\tSession ID: " + sessId + "\n\tSearch str: " + searchStr, "10")
+                self.print_trigger.emit("##############################################", "10")
 
                 # Spazio
                 self.print_trigger.emit("", "10")
@@ -261,16 +314,17 @@ class Directory_Server(threading.Thread):
                     if len(supernodes) > 0:
                         # “QUER”[4B].Pktid[16B].IPP2P[55B].PP2P[5B].TTL[2B].Ricerca[20B]          mando solo ai supernodi
 
-                        msg = 'QUER' + pktId + self.my_ipv4 + '|' + self.my_ipv6 + self.my_port + str(self.ttl).zfill(
-                            2) + searchStr
+                        msg = 'QUER' + pktId + self.my_ipv4 + '|' + self.my_ipv6 + self.my_port + str(self.ttl).zfill(2) + searchStr
                         for supern in supernodes:
                             if not is_sender(self.address[0], supern['ipv4'], supern['ipv6']):
                                 sendTo(self.print_trigger, "1", supern['ipv4'], supern['ipv6'], supern['port'], msg)
 
+                        self.print_trigger.emit("##############################################", "10")
                         # aspetto per 20s le risposte dei supernodi
                         for i in range(0, 10):
                             self.print_trigger.emit("Collecting responses, time left " + str(10-i), "10")
                             time.sleep(1)
+                        self.print_trigger.emit("##############################################", "10")
 
                     listResults = list(self.dbConnect.get_file_query(pktId)['results'])
 
@@ -284,27 +338,46 @@ class Directory_Server(threading.Thread):
 
                         try:
                             conn.send(msg.encode('utf-8'))
-                            self.print_trigger.emit("=> " + str(self.address[0]) + "  " + msg[0:4] + '  ' + msg[4:], "12")
+                            # Stampo a video
+                            self.print_trigger.emit("##############################################", "12")
+                            self.print_trigger.emit("PACKET SENT", "12")
+                            self.print_trigger.emit(
+                                "\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + " " + msg[4:7],
+                                "12")
+                            self.print_trigger.emit("##############################################", "12")
 
                         except socket.error as e:
+                            self.print_trigger.emit("##############################################", "11")
                             self.print_trigger.emit("Connection Error: %s" % str(e), "11")
+                            self.print_trigger.emit("##############################################", "11")
                         except Exception as e:
+                            self.print_trigger.emit("##############################################", "11")
                             self.print_trigger.emit('Error: ' + str(e), "11")
+                            self.print_trigger.emit("##############################################", "11")
 
                     else:
                         try:
                             conn.send("AFIN000".encode('utf-8'))
-                            self.print_trigger.emit("=> " + str(self.address[0]) + "  " + "AFIN" + '  ' + "000", "12")
+                            # Stampo a video
+                            self.print_trigger.emit("##############################################", "12")
+                            self.print_trigger.emit("PACKET SENT", "12")
+                            self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + "AFIN" + " " + "000", "12")
+                            self.print_trigger.emit("##############################################", "12")
 
                         except socket.error as msg:
+                            self.print_trigger.emit("##############################################", "11")
                             self.print_trigger.emit("Connection Error: %s" % str(msg), "11")
+                            self.print_trigger.emit("##############################################", "11")
                         except Exception as e:
+                            self.print_trigger.emit("##############################################", "11")
                             self.print_trigger.emit('Error: ' + str(e), "11")
+                            self.print_trigger.emit("##############################################", "11")
 
                 # Spazio
                 self.print_trigger.emit("", "10")
 
             else:
+                self.print_trigger.emit("##############################################", "11")
                 self.print_trigger.emit("\n Command not recognized", "11")
-
+                self.print_trigger.emit("##############################################", "11")
             cmd = conn.recv(self.size).decode('ascii')

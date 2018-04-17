@@ -23,10 +23,8 @@ def hashfile(file, hasher, blocksize=65536):
 def get_shareable_files():
     files_list = []
 
-    # TODO: cambiare sul mac con ../fileCondivisi
     for root, dirs, files in os.walk("fileCondivisi"):
         for file in files:
-            # TODO: cambiare sul mac con ../fileCondivisi
             file_md5 = hashfile(open("fileCondivisi/" + file, 'rb'), hashlib.md5())
             files_list.append({
                 'name': file,
@@ -166,8 +164,12 @@ def sendTo(print_trigger, print_mode, ipv4, ipv6, port, msg):
             msg_port = msg[75:80]
             msg_ttl = msg[80:82]
 
-            print_trigger.emit("=> " + str(c.socket.getpeername()[0]) + "  " + msg[0:4] + "  " + msg_pktId + "  " + msg_ipv4 +
-                               "  " + msg_ipv6 + "  " + msg_port + "  " + msg_ttl, print_mode + "2")
+            print_trigger.emit("##############################################", print_mode + "2")
+            print_trigger.emit("PACKET SENT", "12")
+            print_trigger.emit("\tAddress: " + str(c.socket.getpeername()[0]) + "\n\tCommand: " + msg[0:4] + "\n\tMessage pktID: " + msg_pktId + "\n\tMsg IPv4: " +
+                               msg_ipv4 + "\n\tMsg IPv6: " + msg_ipv6 + "\n\tMsg Port: " + msg_port + "\n\tMsg TTL: " + msg_ttl, print_mode + "2")
+            print_trigger.emit("##############################################", print_mode + "2")
+
             # Spazio
             print_trigger.emit("", print_mode + "0")
 
@@ -177,8 +179,12 @@ def sendTo(print_trigger, print_mode, ipv4, ipv6, port, msg):
             msg_ipv6 = msg[36:75]
             msg_port = msg[75:80]
 
-            print_trigger.emit("=> " + str(c.socket.getpeername()[0]) + "  " + msg[0:4] + "  " + msg_pktId + "  " + msg_ipv4 +
-                               "  " + msg_ipv6 + "  " + msg_port, print_mode + "2")
+            print_trigger.emit("##############################################", print_mode + "2")
+            print_trigger.emit("PACKET SENT", "12")
+            print_trigger.emit("\tAddress: " + str(c.socket.getpeername()[0]) + "\n\tCommand: " + msg[0:4] + "\n\tMessage pktID: " + msg_pktId + "\n\tMsg IPv4: " +
+                               msg_ipv4 + "\n\tMsg IPv6: " + msg_ipv6 + "\n\tMsg Port: " + msg_port, print_mode + "2")
+            print_trigger.emit("##############################################", print_mode + "2")
+
             # Spazio
             print_trigger.emit("", print_mode + "0")
 
@@ -190,8 +196,11 @@ def sendTo(print_trigger, print_mode, ipv4, ipv6, port, msg):
             msg_ttl = msg[80:82]
             msg_searchStr = msg[82:102]
 
-            print_trigger.emit("=> " + str(c.socket.getpeername()[0]) + "  " + msg[0:4] + "  " + msg_pktId + "  " + msg_ipv4 +
-                               "  " + msg_ipv6 + "  " + msg_port + "  " + msg_ttl + "  " + msg_searchStr, print_mode + "2")
+            print_trigger.emit("##############################################", print_mode + "2")
+            print_trigger.emit("PACKET SENT", "12")
+            print_trigger.emit("\tAddress: " + str(c.socket.getpeername()[0]) + "\n\tCommand: " + msg[0:4] + "\n\tMessage pktID: " + msg_pktId + "\n\tMsg IPv4: " +
+                               msg_ipv4 + "\n\tMsg IPv6: " + msg_ipv6 + "\n\tMsg Port: " + msg_port + "\n\tMsg TTL: " + msg_ttl + "\n\tMsg search_str: " + msg_searchStr, print_mode + "2")
+            print_trigger.emit("##############################################", print_mode + "2")
 
             # Spazio
             print_trigger.emit("",  print_mode + "0")
@@ -204,19 +213,29 @@ def sendTo(print_trigger, print_mode, ipv4, ipv6, port, msg):
             msg_md5 = msg[80:112]
             msg_fname = msg[112:212]
 
-            print_trigger.emit("=> " + str(c.socket.getpeername()[0]) + "  " + msg[0:4] + "  " + msg_pktId + "  " + msg_ipv4 +
-                               "  " + msg_ipv6 + "  " + msg_port + "  " + msg_md5 + "  " + msg_fname, print_mode + "2")
+            print_trigger.emit("##############################################", print_mode + "2")
+            print_trigger.emit("PACKET SENT", "12")
+            print_trigger.emit("\tAddress: " + str(c.socket.getpeername()[0]) + "\n\tCommand: " + msg[0:4] + "\n\tMessage pktID: " + msg_pktId + "\n\tMsg IPv4: " +
+                               msg_ipv4 + "\n\tMsg IPv6: " + msg_ipv6 + "\n\tMsg Port: " + msg_port + "\n\tMsg MD5: " + msg_md5 +
+                               "\n\tMsg Filename: " + msg_fname, print_mode + "2")
+            print_trigger.emit("##############################################", print_mode + "2")
 
             # Spazio
             print_trigger.emit("", print_mode + "0")
 
         peerSock.close()
     except IOError as e:
-        print_trigger.emit('sendTo Error: ' + str(e), print_mode+"1")
+        print_trigger.emit("##############################################", print_mode + "1")
+        print_trigger.emit('sendTo Error: ' + str(e), print_mode + "1")
+        print_trigger.emit("##############################################", print_mode + "1")
     except socket.error as e:
-        print_trigger.emit('sendTo Error: ' + str(e), print_mode+"1")
+        print_trigger.emit("##############################################", print_mode + "1")
+        print_trigger.emit('sendTo Error: ' + str(e), print_mode + "1")
+        print_trigger.emit("##############################################", print_mode + "1")
     except Exception as e:
-        print_trigger.emit('sendTo Error: ' + str(e), print_mode+"1")
+        print_trigger.emit("##############################################", print_mode + "1")
+        print_trigger.emit('sendTo Error: ' + str(e), print_mode + "1")
+        print_trigger.emit("##############################################", print_mode + "1")
 
 
 def is_sender(address, pktIpv4, pktIpv6):
@@ -236,22 +255,24 @@ def is_sender(address, pktIpv4, pktIpv6):
             return True
         else:
             return False
-    return False
 
 
 def sound_success():
     file = './music/success.wav'
     sound(file)
 
+
 def sound_error():
     file = './music/error.wav'
     sound(file)
+
 
 def sound(file):
 
     pygame.init()
     sound = pygame.mixer.Sound(file)
     sound.play()
+
 
 def add_neighbor(output_lock, db):
     group_number = None
@@ -270,7 +291,6 @@ def add_neighbor(output_lock, db):
                 group_number = int(option)
             except ValueError:
                 output(output_lock, "A number is required")
-
 
     member_number = None
     output(output_lock, 'Insert member number:')
