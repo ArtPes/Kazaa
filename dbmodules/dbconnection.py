@@ -513,14 +513,3 @@ class MongoConnection():
         self.db.searchFiles.drop()
         self.db.searchPeers.drop()
         self.db.registerPktIds.drop()
-
-
-    def in1(self, ipv4, ipv6, port, is_supernode):
-        """
-            Inserisce un vicino
-        """
-        self.db.neighbors.insert_one({"ipv4": ipv4,
-                                          "ipv6": ipv6,
-                                          "port": port,
-                                          "is_supernode": is_supernode
-                                          })

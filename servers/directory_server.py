@@ -5,7 +5,7 @@ from dbmodules.dbconnection import *
 class Directory_Server(threading.Thread):
     """
         Ascolta sulla porta 3000
-        Supernodo: Gestisce le comunicazioni tra directory e i peer: LOGI, LOGO, ADDF, DELF, FIND
+        Supernodo: Gestisce le comunicazioni tra directory e i peer: LOGI, LOGO, ADDF, DEFF, FIND
         Peer: non utilizzata
     """
 
@@ -200,7 +200,7 @@ class Directory_Server(threading.Thread):
                 # Spazio
                 self.print_trigger.emit("", "10")
 
-            elif cmd[:4] == 'DELF':
+            elif cmd[:4] == 'DEFF':
                 # “DEFF”[4B].SessionID[16B].Filemd5[32B]
                 sessId = cmd[4:20]
                 md5 = cmd[20:52]

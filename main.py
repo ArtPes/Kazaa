@@ -26,7 +26,7 @@ class Main(QtCore.QThread):
         db = MongoConnection(out_lck)
         db.refreshDB()
 
-        # inserisco luca come vicino
+        # inserisco un vicino che può essere un supernodo
         add_neighbor(out_lck, db)
 
         output(out_lck, "Are you a supernode?")

@@ -65,7 +65,7 @@ class Client(threading.Thread):
 
             self.dbConnect.share_file(sessId, md5, fname)
 
-        elif cmd[:4] == 'DELF':
+        elif cmd[:4] == 'DEFF':
             #“DEFF”[4B].SessionID[16B].Filemd5[32B]
             sessId = cmd[4:20]
             md5 = cmd[20:52]
