@@ -8,7 +8,6 @@ class Directory_Server(threading.Thread):
         Supernodo: Gestisce le comunicazioni tra directory e i peer: LOGI, LOGO, ADDF, DEFF, FIND
         Peer: non utilizzata
     """
-
     def __init__(self, arg, dbConnect, output_lock, print_trigger, my_ipv4, my_ipv6, my_port, ttl, is_supernode):
         # QtCore.QThread.__init__(self, parent=None)
         threading.Thread.__init__(self)
