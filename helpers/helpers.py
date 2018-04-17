@@ -308,9 +308,9 @@ def add_neighbor(output_lock, db):
     output(output_lock, 'Is it a supernode? (y/n)')
     temp = input()
     if temp.lower() == 'y':
-        is_superpeer = True
+        is_superpeer = "true"
     else:
-        is_superpeer = False
+        is_superpeer = "false"
 
     found = db.db.neighbors.find(
         {"ipv4": config.partialIpv4 + str(group_number).zfill(3) + "." + str(member_number).zfill(3),
