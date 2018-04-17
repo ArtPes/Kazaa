@@ -85,17 +85,17 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         elif color == "00":
             self.client.setTextColor(QtGui.QColor('orange'))
             newfont = QtGui.QFont("Times", 11, QtGui.QFont.Bold)
-            self.server.setFont(newfont)
+            self.client.setFont(newfont)
             self.client.append(message)
         elif color == "01":
             self.client.setTextColor(QtGui.QColor('red'))
             newfont = QtGui.QFont("Times", 11, QtGui.QFont.Bold)
-            self.server.setFont(newfont)
+            self.client.setFont(newfont)
             self.client.append(message)
         elif color == "02":
             self.client.setTextColor(QtGui.QColor('green'))
             newfont = QtGui.QFont("Times", 11, QtGui.QFont.Bold)
-            self.server.setFont(newfont)
+            self.client.setFont(newfont)
             self.client.append(message)
 
 '''

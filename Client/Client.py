@@ -66,12 +66,12 @@ class Client(object):
             self.directory.send(msg.encode('ascii'))  # Richiesta di login
 
             # Stampo a video
-            self.print_trigger.emit("##############################################", "10")
-            self.print_trigger.emit("PACKET SENT", "10")
+            self.print_trigger.emit("##############################################", "00")
+            self.print_trigger.emit("PACKET SENT", "00")
             self.print_trigger.emit("\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tCommand: " + msg[0:4] +
                                     "\n\tIPv4: " + self.my_ipv4 + "\n\tIPv6:" + self.my_ipv6 +
                                     "\n\tPort: " + str(self.my_port).zfill(5), "00")
-            self.print_trigger.emit("##############################################", "10")
+            self.print_trigger.emit("##############################################", "00")
 
             # Spazio
             self.print_trigger.emit("", "00")
@@ -80,7 +80,7 @@ class Client(object):
 
             # Stampo a video
             self.print_trigger.emit("##############################################", "02")
-            self.print_trigger.emit("PACKET RECEIVED", "10")
+            self.print_trigger.emit("PACKET RECEIVED", "02")
             self.print_trigger.emit("\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tResponse: " + response_message[0:4] +
                                      "  " + response_message[4:20], "02")
             self.print_trigger.emit("##############################################", "02")
@@ -103,9 +103,8 @@ class Client(object):
             else:
                 output(self.out_lck, 'Session ID assigned by the directory: ' + self.session_id)
                 output(self.out_lck, 'Login completed')
-                self.print_trigger.emit("##############################################", "02")
-                self.print_trigger.emit('Login completed', '02')
-                self.print_trigger.emit("##############################################", "02")
+
+
     def logout(self):
         """
             Esegue il logout dalla directory a cui si è connessi
@@ -120,11 +119,11 @@ class Client(object):
 
             self.directory.send(msg.encode('utf-8'))  # Richeista di logout
             # Stampo a video
-            self.print_trigger.emit("##############################################", "10")
-            self.print_trigger.emit("PACKET SENT", "10")
+            self.print_trigger.emit("##############################################", "00")
+            self.print_trigger.emit("PACKET SENT", "00")
             self.print_trigger.emit("\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tCommand: " + msg[0:4] +
                                     "\n\tSessionID: " + self.session_id, "00")
-            self.print_trigger.emit("##############################################", "10")
+            self.print_trigger.emit("##############################################", "00")
 
             # Spazio
             self.print_trigger.emit("", "00")
@@ -133,7 +132,7 @@ class Client(object):
 
             # Stampo a video
             self.print_trigger.emit("##############################################", "02")
-            self.print_trigger.emit("PACKET RECEIVED", "10")
+            self.print_trigger.emit("PACKET RECEIVED", "02")
             self.print_trigger.emit(
                 "\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tResponse: " + response_message[0:4] +
                 "  " + response_message[4:7], "02")
@@ -200,7 +199,7 @@ class Client(object):
 
                                 # Stampo a video
                                 self.print_trigger.emit("##############################################", "00")
-                                self.print_trigger.emit("PACKET SENT", "10")
+                                self.print_trigger.emit("PACKET SENT", "00")
                                 self.print_trigger.emit(
                                     "\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tCommand: " + msg[0:4] +
                                     "\n\tSession ID: " + self.session_id + "\n\tMD5: " + file.md5 +
@@ -262,7 +261,7 @@ class Client(object):
 
                                 # Stampo a video
                                 self.print_trigger.emit("##############################################", "00")
-                                self.print_trigger.emit("PACKET SENT", "10")
+                                self.print_trigger.emit("PACKET SENT", "00")
                                 self.print_trigger.emit(
                                     "\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tCommand: " + msg[0:4] +
                                     "\n\tSessionID: " + self.session_id +
@@ -306,7 +305,7 @@ class Client(object):
                 self.directory.send(msg.encode('utf-8'))
                 # Stampo a video
                 self.print_trigger.emit("##############################################", "00")
-                self.print_trigger.emit("PACKET SENT", "10")
+                self.print_trigger.emit("PACKET SENT", "00")
                 self.print_trigger.emit(
                     "\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tCommand: " + msg[0:4] +
                     "\n\tSessionID: " + self.session_id +
@@ -320,7 +319,7 @@ class Client(object):
 
                 # Stampo a video
                 self.print_trigger.emit("##############################################", "02")
-                self.print_trigger.emit("PACKET RECEIVED", "10")
+                self.print_trigger.emit("PACKET RECEIVED", "02")
                 self.print_trigger.emit(
                     "\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tResponse: " + response_message[0:4], "02")
                 self.print_trigger.emit("##############################################", "02")
@@ -473,7 +472,7 @@ class Client(object):
 
             # Stampo a video
             self.print_trigger.emit("##############################################", "00")
-            self.print_trigger.emit("PACKET SENT", "10")
+            self.print_trigger.emit("PACKET SENT", "00")
             self.print_trigger.emit(
                 "\tAddress: " + str(download.getpeername()[0])+ "\n\tCommand: " + msg[0:4] +
                 "\n\tMD5: " + file.md5, "00")
@@ -486,7 +485,7 @@ class Client(object):
 
             # Stampo a video response
             self.print_trigger.emit("##############################################", "02")
-            self.print_trigger.emit("PACKET RECEIVED", "10")
+            self.print_trigger.emit("PACKET RECEIVED", "02")
             self.print_trigger.emit(
                 "\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tResponse: " + response_message[0:4] +
                 "  " + response_message[4:10], "02")
