@@ -37,13 +37,9 @@ class Connection:
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             try:
                 self.socket.connect((self.ipv4, self.port))                                 # inizializzazione della connessione
-                self.print_trigger.emit("##############################################", self.print_mode + "2")
                 self.print_trigger.emit("Connected to: " + self.ipv4 + " " + str(self.port), self.print_mode + "2")
-                self.print_trigger.emit("##############################################", self.print_mode + "2")
             except socket.error as e:
-                self.print_trigger.emit("##############################################", self.print_mode + "1")
                 self.print_trigger.emit("Connection Error: %s" % str(e), self.print_mode + "1")
-                self.print_trigger.emit("##############################################", self.print_mode + "1")
 
 
         else:
@@ -51,13 +47,9 @@ class Connection:
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             try:
                 self.socket.connect((self.ipv6, self.port))                                 # inizializzazione della connessione
-                self.print_trigger.emit("##############################################", self.print_mode + "2")
                 self.print_trigger.emit("Connected to: " + self.ipv6 + " " + str(self.port), self.print_mode + "2")
-                self.print_trigger.emit("##############################################", self.print_mode + "2")
             except socket.error as e:
-                self.print_trigger.emit("##############################################", self.print_mode + "1")
                 self.print_trigger.emit("Connection Error: %s" % str(e), self.print_mode + "1")
-                self.print_trigger.emit("##############################################", self.print_mode + "1")
 
 
 def add_zero(ip):                                  # aggiunge 0 davanti

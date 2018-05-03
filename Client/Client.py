@@ -66,24 +66,17 @@ class Client(object):
             self.directory.send(msg.encode('ascii'))  # Richiesta di login
 
             # Stampo a video
-            self.print_trigger.emit("##############################################", "00")
-            self.print_trigger.emit("PACKET SENT", "00")
-            self.print_trigger.emit("\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tCommand: " + msg[0:4] +
-                                    "\n\tIPv4: " + self.my_ipv4 + "\n\tIPv6:" + self.my_ipv6 +
-                                    "\n\tPort: " + str(self.my_port).zfill(5), "00")
-            self.print_trigger.emit("##############################################", "00")
-
+            self.print_trigger.emit("**LOGIN MSG***", "02")
+            self.print_trigger.emit("==> " + msg[0:4] + self.my_ipv4 + " " + self.my_ipv6 + " " + str(self.my_port).zfill(5), "02")
             # Spazio
-            self.print_trigger.emit("", "00")
+            self.print_trigger.emit("", "02")
 
             response_message = self.directory.recv(20).decode('utf-8') # Risposta della directory, deve contenere ALGI e il session id
 
             # Stampo a video
-            self.print_trigger.emit("##############################################", "02")
-            self.print_trigger.emit("PACKET RECEIVED", "02")
-            self.print_trigger.emit("\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tResponse: " + response_message[0:4] +
-                                     "  " + response_message[4:20], "02")
-            self.print_trigger.emit("##############################################", "02")
+            self.print_trigger.emit("***ACK_LOGIN MSG***", "00")
+            self.print_trigger.emit("<== " + response_message[0:4] + " " + response_message[4:20], "00")
+            self.print_trigger.emit("", "00")
 
         except socket.error as e:
             self.print_trigger.emit("##############################################", "01")
@@ -104,7 +97,6 @@ class Client(object):
                 output(self.out_lck, 'Session ID assigned by the directory: ' + self.session_id)
                 output(self.out_lck, 'Login completed')
 
-
     def logout(self):
         """
             Esegue il logout dalla directory a cui si è connessi
@@ -119,50 +111,43 @@ class Client(object):
 
             self.directory.send(msg.encode('utf-8'))  # Richeista di logout
             # Stampo a video
-            self.print_trigger.emit("##############################################", "00")
-            self.print_trigger.emit("PACKET SENT", "00")
-            self.print_trigger.emit("\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tCommand: " + msg[0:4] +
-                                    "\n\tSessionID: " + self.session_id, "00")
-            self.print_trigger.emit("##############################################", "00")
-
+            self.print_trigger.emit("***LOGOUT MSG***", "02")
+            self.print_trigger.emit("==> " + msg[0:4] + " " + self.session_id, "02")
             # Spazio
-            self.print_trigger.emit("", "00")
+            self.print_trigger.emit("", "02")
 
             response_message = self.directory.recv(7).decode('ascii')  # Risposta della directory, deve contenere ALGO e il numero di file che erano stati condivisi
 
             # Stampo a video
-            self.print_trigger.emit("##############################################", "02")
-            self.print_trigger.emit("PACKET RECEIVED", "02")
-            self.print_trigger.emit(
-                "\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tResponse: " + response_message[0:4] +
-                "  " + response_message[4:7], "02")
-            self.print_trigger.emit("##############################################", "02")
+            self.print_trigger.emit("***ACK_LOGOUT MSG", "00")
+            self.print_trigger.emit("<== " + response_message[0:4] + " " + response_message[4:7], "00")
+            self.print_trigger.emit("", "00")
 
         except socket.error as e:
+            self.print_trigger.emit("##############################################", "01")
             self.print_trigger.emit('Socket Error: ' + str(e), '01')
-        except Exception as e:
-            self.print_trigger.emit('Error: ' + str(e), '01')
+            self.print_trigger.emit("##############################################", "01")
 
         if response_message is None:
             output(self.out_lck, 'No response from directory. Login failed')
+
         elif response_message[0:4] == 'ALGO':
             self.session_id = None
-
             number_file = int(response_message[4:7])  # Numero di file che erano stati condivisi
             output(self.out_lck, 'You\'d shared ' + str(number_file) + ' files')
-
             self.directory.close()  # Chiusura della connessione
             output(self.out_lck, 'Logout completed')
-            self.print_trigger.emit('Logout completed', '02')
+            self.print_trigger.emit('\nLogout completed!', '00')
         else:
             output(self.out_lck, 'Error: unknown response from directory.\n')
-            self.print_trigger.emit('Error: unknown response from directory.', '01')
+            self.print_trigger.emit("##############################################", "01")
+            self.print_trigger.emit('Error: unknown response from directory.\n', '01')
+            self.print_trigger.emit("##############################################", "01")
 
     def share(self):
         """
             Aggiunge un file alla directory rendendolo disponibile agli altri peer per il download
         """
-
         found = False
         while not found:
             output(self.out_lck, '\nSelect a file to share (\'c\' to cancel):')
@@ -194,28 +179,21 @@ class Client(object):
                             response_message = None
                             try:
                                 self.check_connection()
-
                                 self.directory.send(msg.encode('utf-8'))
-
                                 # Stampo a video
-                                self.print_trigger.emit("##############################################", "00")
-                                self.print_trigger.emit("PACKET SENT", "00")
-                                self.print_trigger.emit(
-                                    "\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tCommand: " + msg[0:4] +
-                                    "\n\tSession ID: " + self.session_id + "\n\tMD5: " + file.md5 +
-                                    "\n\tFile Name: " + file.name.ljust(100), "00")
-                                self.print_trigger.emit("##############################################", "00")
-
+                                self.print_trigger.emit("***ADDFILE MSG***", "02")
+                                self.print_trigger.emit("==> " + msg[0:4] + " " + self.session_id + " " + file.md5 + " " + file.name.ljust(100), "02")
                                 # Spazio
-                                self.print_trigger.emit("", "00")
+                                self.print_trigger.emit("", "02")
 
                             except socket.error as e:
-                                # output(self.out_lck, 'Socket Error: ' + str(msg))
+                                self.print_trigger.emit("##############################################", "01")
                                 self.print_trigger.emit('Socket Error: ' + str(e), '01')
+                                self.print_trigger.emit("##############################################", "01")
                             except Exception as e:
-                                # output(self.out_lck, 'Error: ' + e.message)
+                                self.print_trigger.emit("##############################################", "01")
                                 self.print_trigger.emit('Error: ' + str(e), '01')
-
+                                self.print_trigger.emit("##############################################", "01")
                     if not found:
                         output(self.out_lck, 'Option not available')
 
@@ -260,22 +238,18 @@ class Client(object):
                                 self.directory.send(msg.encode('utf-8'))  # Richiesta di rimozione del file dalla directory, deve contenere session id e md5
 
                                 # Stampo a video
-                                self.print_trigger.emit("##############################################", "00")
-                                self.print_trigger.emit("PACKET SENT", "00")
-                                self.print_trigger.emit(
-                                    "\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tCommand: " + msg[0:4] +
-                                    "\n\tSessionID: " + self.session_id +
-                                    "\n\tMD5: " + file.md5, "00")
-                                self.print_trigger.emit("##############################################", "00")
-
+                                self.print_trigger.emit("***DELETEFILE MSG***", "02")
+                                self.print_trigger.emit("==> " + " " + msg[0:4] + " " + self.session_id + " " + file.md5, "02")
                                 # Spazio
-                                self.print_trigger.emit("", "00")
+                                self.print_trigger.emit("", "02")
                             except socket.error as e:
-                                # output(self.out_lck, 'Socket Error: ' + str(msg))
+                                self.print_trigger.emit("##############################################", "01")
                                 self.print_trigger.emit('Socket Error: ' + str(e), '01')
+                                self.print_trigger.emit("##############################################", "01")
                             except Exception as e:
-                                # output(self.out_lck, 'Error: ' + e.message)
+                                self.print_trigger.emit("##############################################", "01")
                                 self.print_trigger.emit('Error: ' + str(e), '01')
+                                self.print_trigger.emit("##############################################", "01")
 
                     if not found:
                         output(self.out_lck, 'Option not available')
@@ -304,54 +278,52 @@ class Client(object):
 
                 self.directory.send(msg.encode('utf-8'))
                 # Stampo a video
-                self.print_trigger.emit("##############################################", "00")
-                self.print_trigger.emit("PACKET SENT", "00")
-                self.print_trigger.emit(
-                    "\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tCommand: " + msg[0:4] +
-                    "\n\tSessionID: " + self.session_id +
-                    "\n\tSearch: " + term.ljust(20), "00")
-                self.print_trigger.emit("##############################################", "00")
-
+                self.print_trigger.emit("***FIND MSG***", "02")
+                self.print_trigger.emit("==> " + " " + msg[0:4] + " " + self.session_id + " " + term.ljust(20), "02")
                 # Spazio
-                self.print_trigger.emit("", "00")
+                self.print_trigger.emit("", "02")
 
                 response_message = self.directory.recv(4).decode('ascii')
 
                 # Stampo a video
-                self.print_trigger.emit("##############################################", "02")
-                self.print_trigger.emit("PACKET RECEIVED", "02")
-                self.print_trigger.emit(
-                    "\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tResponse: " + response_message[0:4], "02")
-                self.print_trigger.emit("##############################################", "02")
+                self.print_trigger.emit("***ACK_FIND MSG***", "00")
+                self.print_trigger.emit("<== " + response_message[0:4], "00")
+                self.print_trigger.emit("", "00")
 
             except socket.error as e:
-                # output(self.out_lck, 'Socket Error: ' + str(msg))
+                self.print_trigger.emit("##############################################", "01")
                 self.print_trigger.emit('Socket Error: ' + str(e), '01')
+                self.print_trigger.emit("##############################################", "01")
             except Exception as e:
-                # output(self.out_lck, 'Error: ' + e.message)
+                self.print_trigger.emit("##############################################", "01")
                 self.print_trigger.emit('Error: ' + str(e), '01')
+                self.print_trigger.emit("##############################################", "01")
 
             if not response_message == 'AFIN':
                 output(self.out_lck, 'Error: unknown response from directory.\n')
+                self.print_trigger.emit("##############################################", "01")
                 self.print_trigger.emit('Error: unknown response from directory.', '01')
+                self.print_trigger.emit("##############################################", "01")
             else:
                 idmd5 = None
                 try:
                     idmd5 = self.directory.recv(3)  # Numero di identificativi md5
                 except socket.error as e:
-                    # output(self.out_lck, 'Socket Error: ' + e.message)
-                    self.print_trigger.emit('Socket Error: ' + str(msg), '01')
+                    self.print_trigger.emit("##############################################", "01")
+                    self.print_trigger.emit('Socket Error: ' + str(e), '01')
+                    self.print_trigger.emit("##############################################", "01")
                 except Exception as e:
-                    # output(self.out_lck, 'Error: ' + e.message)
+                    self.print_trigger.emit("##############################################", "01")
                     self.print_trigger.emit('Error: ' + str(e), '01')
+                    self.print_trigger.emit("##############################################", "01")
 
                 if idmd5 is None:
-                    output(self.out_lck, 'Error: idmd5 is blank')
+                    output(self.out_lck, 'Error: idmd5 is blank!\n')
                 else:
                     try:
                         idmd5 = int(idmd5)
                     except ValueError:
-                        output(self.out_lck, "Error: idmd5 is not a number")
+                        output(self.out_lck, "Error: idmd5 is not a number!\n")
                     else:
                         if idmd5 == 0:
                             output(self.out_lck, "No results found for search term: " + term)
@@ -376,11 +348,13 @@ class Client(object):
                                     available_files.append(SharedFile.SharedFile(file_i_name, file_i_md5, file_owners))
 
                             except socket.error as e:
-                                # output(self.out_lck, 'Socket Error: ' + str(msg))
+                                self.print_trigger.emit("##############################################", "01")
                                 self.print_trigger.emit('Socket Error: ' + str(e), '01')
+                                self.print_trigger.emit("##############################################", "01")
                             except Exception as e:
-                                # output(self.out_lck, 'Error: ' + e.message)
+                                self.print_trigger.emit("##############################################", "01")
                                 self.print_trigger.emit('Error: ' + str(e), '01')
+                                self.print_trigger.emit("##############################################", "01")
 
                             if len(available_files) == 0:
                                 output(self.out_lck, "No results found for search term: " + term)
@@ -397,20 +371,19 @@ class Client(object):
                                         option = None
 
                                     if option is None:
-                                        output(self.out_lck, 'Please select an option')
+                                        output(self.out_lck, 'Please select an option!')
                                     elif option == 'c':
                                         return
                                     else:
                                         try:
                                             selected_file = int(option)
                                         except ValueError:
-                                            output(self.out_lck, "A number is required")
+                                            output(self.out_lck, "A number is required!")
 
                                 file_to_download = available_files[selected_file]  # Recupero del file selezionato dalla lista dei risultati
 
                                 output(self.out_lck, "Select a peer ('c' to cancel): ")
-                                for idx, file in enumerate(
-                                        available_files):  # Visualizzazione la lista dei peer da cui è possibile scaricarlo
+                                for idx, file in enumerate(available_files):  # Visualizzazione la lista dei peer da cui è possibile scaricarlo
                                     if selected_file == idx:
                                         for idx2, owner in enumerate(file.owners):
                                             print(str(idx2) + ": " + owner.ipv4 + " | " + owner.ipv6 + " | " + owner.port)
@@ -423,23 +396,19 @@ class Client(object):
                                         option = None
 
                                     if option is None:
-                                        output(self.out_lck, 'Please select an option')
+                                        output(self.out_lck, 'Please select an option!')
                                     elif option == 'c':
                                         return
                                     else:
                                         try:
                                             selected_peer = int(option)
                                         except ValueError:
-                                            output(self.out_lck, "A number is required")
+                                            output(self.out_lck, "A number is required!")
 
                                 for idx2, owner in enumerate(file_to_download.owners):  # Download del file selezionato
                                     if selected_peer == idx2:
                                         output(self.out_lck, "Downloading file from: " + owner.ipv4 + " | " + owner.ipv6 + " " + owner.port)
-                                        # self.print_trigger.emit(
-                                        #     "Downloading file from: " + owner.ipv4 + " | " + owner.ipv6 + " " + owner.port,
-                                        #     '00')
-                                        self.get_file(self.session_id, owner.ipv4, owner.ipv6, owner.port,
-                                                      file_to_download)
+                                        self.get_file(self.session_id, owner.ipv4, owner.ipv6, owner.port, file_to_download)
                         else:
                             output(self.out_lck, "Unknown error, check your code!")
 
@@ -471,37 +440,29 @@ class Client(object):
             download.send(msg.encode('utf-8'))  # Richiesta di download al peer
 
             # Stampo a video
-            self.print_trigger.emit("##############################################", "00")
-            self.print_trigger.emit("PACKET SENT", "00")
-            self.print_trigger.emit(
-                "\tAddress: " + str(download.getpeername()[0])+ "\n\tCommand: " + msg[0:4] +
-                "\n\tMD5: " + file.md5, "00")
-            self.print_trigger.emit("##############################################", "00")
 
+            self.print_trigger.emit("***RETRIEVE MSG***", "02")
+            self.print_trigger.emit("==> " + msg[0:4] + " " + file.md5, "02")
             # Spazio
             self.print_trigger.emit("", "00")
 
             response_message = download.recv(10).decode('ascii')  # Risposta del peer, deve contenere il codice ARET seguito dalle parti del file
 
             # Stampo a video response
-            self.print_trigger.emit("##############################################", "02")
-            self.print_trigger.emit("PACKET RECEIVED", "02")
-            self.print_trigger.emit(
-                "\tAddress: " + str(self.directory.getpeername()[0]) + "\n\tResponse: " + response_message[0:4] +
-                "  " + response_message[4:10], "02")
-            self.print_trigger.emit("##############################################", "02")
-
+            self.print_trigger.emit("***ACK_RETRIEVE MSG", "00")
+            self.print_trigger.emit("<== " + response_message[0:4] + " " + response_message[4:10], "00")
+            self.print_trigger.emit("", "00")
         except socket.error as e:
-            # output(self.out_lck, 'Error: ' + e.message)
-            self.print_trigger.emit('Error: ' + str(e), '01')
+            self.print_trigger.emit("##############################################", "01")
+            self.print_trigger.emit('Socket Error: ' + str(e), '01')
+            self.print_trigger.emit("##############################################", "01")
         except Exception as e:
-            # output(self.out_lck, 'Error: ' + e.message)
+            self.print_trigger.emit("##############################################", "01")
             self.print_trigger.emit('Error: ' + str(e), '01')
+            self.print_trigger.emit("##############################################", "01")
         else:
             if response_message[:4] == 'ARET':
                 n_chunks = response_message[4:10]  # Numero di parti del file da scaricare
-                # tmp = 0
-
                 filename = file.name
                 fout = open('received/' + filename, "wb")  # Apertura di un nuovo file in write byte mode (sovrascrive se già esistente)
 
@@ -510,7 +471,6 @@ class Client(object):
                 for i in range(0, n_chunks):
                     if i == 0:
                         output(self.out_lck, 'Download started...')
-                        #self.print_trigger.emit('Download started...', '00')
 
                     update_progress(self.out_lck, i, n_chunks, 'Downloading ' + fout.name)  # Stampa a video del progresso del download
 
@@ -519,28 +479,30 @@ class Client(object):
                         data = recvall(download, int(chunk_length))  # Ricezione dal peer la parte del file
                         fout.write(data)  # Scrittura della parte su file
                     except socket.error as e:
-                        # output(self.out_lck, 'Socket Error: ' + e.message)
+                        self.print_trigger.emit("##############################################", "01")
                         self.print_trigger.emit('Socket Error: ' + str(e), '01')
+                        self.print_trigger.emit("##############################################", "01")
                         break
                     except IOError as e:
-                        # output(self.out_lck, 'IOError: ' + e.message)
+                        self.print_trigger.emit("##############################################", "01")
                         self.print_trigger.emit('IOError: ' + str(e), '01')
+                        self.print_trigger.emit("##############################################", "01")
                         break
                     except Exception as e:
-                        # output(self.out_lck, 'Error: ' + e.message)
+                        self.print_trigger.emit("##############################################", "01")
                         self.print_trigger.emit('Error: ' + str(e), '01')
+                        self.print_trigger.emit("##############################################", "01")
                         break
                 fout.close()  # Chiusura file a scrittura ultimata
 
                 output(self.out_lck, '\nDownload completed')
-                #self.print_trigger.emit('Download completed', '00')
                 output(self.out_lck, 'Checking file integrity...')
                 downloaded_md5 = hashfile(open(fout.name, 'rb'), hashlib.md5())  # Controllo dell'integrità del file appena scarcato tramite md5
                 if file.md5 == downloaded_md5:
-                    output(self.out_lck, 'The downloaded file is intact')
+                    output(self.out_lck, 'The downloaded file is intact!')
                     sound_success()
                 else:
-                    output(self.out_lck, 'Something is wrong. Check the downloaded file')
+                    output(self.out_lck, 'Something is wrong. Check the downloaded file!')
                     sound_error()
             else:
                 output(self.out_lck, 'Error: unknown response from directory.\n')
@@ -560,11 +522,9 @@ class Client(object):
                 sendTo(self.print_trigger, "0", neighbor['ipv4'], neighbor['ipv6'], neighbor['port'], msg)
 
         # aspetto per 20s le risposte dei supernodi
-        for i in range(0, 10):
-            output(self.out_lck, "Collecting responses, time left " + str(10 - i))
+        for i in range(0, 20):
+            output(self.out_lck, "Collecting responses, time left " + str(20 - i))
             time.sleep(1)
-
-        # output_timer(self.out_lck,5)
 
         #self.dbConnect.finalize_peer_query(pktId)
         output(self.out_lck, "Supernodes search over.")

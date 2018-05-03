@@ -38,12 +38,9 @@ class Peer_Server(threading.Thread):
                 port = cmd[75:80]
                 ttl = int(cmd[80:82])
 
-                self.print_trigger.emit("##############################################", "10")
-                self.print_trigger.emit("PACKET RECEIVED", "10")
-                self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + "\n\tPacket ID: " + pktId + "\n\tIPv4: " + ipv4 + "\n\tIPv6:" + ipv6 +
-                                        "\n\tPort: " + str(port).zfill(2) + "\n\tTTL:" + str(ttl).zfill(2), "10")
-                self.print_trigger.emit("##############################################", "10")
-
+                self.print_trigger.emit("***SUPER MSG***", "10")
+                self.print_trigger.emit("<== " + "Address: " + str(self.address[0]) + " | " + cmd[0:4] + " " + pktId + " " + ipv4 + " " + ipv6 +
+                                         " " + str(port).zfill(2) + " " + str(ttl).zfill(2), "10")
                 # Spazio
                 self.print_trigger.emit("", "10")
 
@@ -76,12 +73,8 @@ class Peer_Server(threading.Thread):
                 ipv4 = cmd[20:35]
                 ipv6 = cmd[36:75]
                 port = cmd[75:80]
-                self.print_trigger.emit("##############################################", "10")
-                self.print_trigger.emit("PACKET RECEIVED", "10")
-                self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + "\n\tPacket ID: " + pktId + "\n\tIPv4: " + ipv4 + "\n\tIPv6:" + ipv6 +
-                                        "\n\tPort: " + str(port).zfill(2), "10")
-                self.print_trigger.emit("##############################################", "10")
-
+                self.print_trigger.emit("***ACK_SUPER MSG***", "10")
+                self.print_trigger.emit("<== " + "Address: " + str(self.address[0]) + " | " + cmd[0:4] + " " + pktId + " " + ipv4 + " " + ipv6 +  " " + str(port).zfill(2), "10")
                 # Spazio
                 self.print_trigger.emit("", "10")
 
@@ -96,12 +89,9 @@ class Peer_Server(threading.Thread):
                 ttl = int(cmd[80:82])
                 searchStr = cmd[82:102]
 
-                self.print_trigger.emit("##############################################", "10")
-                self.print_trigger.emit("PACKET RECEIVED", "10")
-                self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + "\n\tPacket ID: " + pktId + "\n\tIPv4: " + ipv4 + "\n\tIPv6:" + ipv6 +
-                                        "\n\tPort: " + str(port).zfill(2) + "\n\tTTL:" + str(ttl).zfill(2) +
-                                        "\n\tSearch String: " + searchStr, "10")
-                self.print_trigger.emit("##############################################", "10")
+                self.print_trigger.emit("***QUERY MSG***", "10")
+                self.print_trigger.emit("<== " + "Address: " + str(self.address[0]) + " | " + cmd[0:4] + " " + pktId + " " + ipv4 + " " + ipv6 +
+                                        " " + str(port).zfill(2) + " " + str(ttl).zfill(2) + " " + searchStr, "10")
 
                 # Spazio
                 self.print_trigger.emit("", "10")
@@ -145,11 +135,8 @@ class Peer_Server(threading.Thread):
                 md5 = cmd[80:112]
                 fname = cmd[112:212]
 
-                self.print_trigger.emit("##############################################", "10")
-                self.print_trigger.emit("PACKET RECEIVED", "10")
-                self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + "\n\tPacket ID: " + pktId + "\n\tIPv4: " + ipv4 + "\n\tIPv6:" + ipv6 +
-                                        "\n\tPort: " + str(port).zfill(2) + "\n\tMD5:" + str(md5) + "\n\tFilename: " + fname, "10")
-                self.print_trigger.emit("##############################################", "10")
+                self.print_trigger.emit("***ACK_QUERY MSG***", "10")
+                self.print_trigger.emit("<== " + "Address: " + str(self.address[0]) + " | " + cmd[0:4] + " " + pktId + " " + ipv4 + " " + ipv6 +  " " + str(port).zfill(2) + " " + str(md5) + " " + fname, "10")
 
                 self.dbConnect.update_file_query(pktId, md5, fname, ipv4, ipv6, port)
 
@@ -159,10 +146,8 @@ class Peer_Server(threading.Thread):
             elif cmd[:4] == 'RETR':
                 md5Remoto = cmd[4:36]
 
-                self.print_trigger.emit("##############################################", "10")
-                self.print_trigger.emit("PACKET RECEIVED", "10")
-                self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + cmd[0:4] + "\n\tRemote MD5: " + md5Remoto, "10")
-                self.print_trigger.emit("##############################################", "10")
+                self.print_trigger.emit("***RETRIEVE MSG***", "10")
+                self.print_trigger.emit("<== " + "Address: " + str(self.address[0]) + " | " + cmd[0:4] + " " + md5Remoto, "10")
 
                 # Spazio
                 self.print_trigger.emit("", "10")
@@ -195,10 +180,8 @@ class Peer_Server(threading.Thread):
                         msg = 'ARET' + str(n_chunks).zfill(6)  # Risposta alla richiesta di download, deve contenere ARET ed il numero di chunks che saranno inviati
 
                         conn.sendall(msg.encode('utf-8'))
-                        self.print_trigger.emit("##############################################", "12")
-                        self.print_trigger.emit("PACKET SENT", "12")
-                        self.print_trigger.emit("\tAddress: " + str(self.address[0]) + "\n\tCommand: " + msg[0:4] + "  " + msg[4:10], "12")
-                        self.print_trigger.emit("##############################################", "12")
+                        self.print_trigger.emit("***ACK_RETRIEVE MSG***", "12")
+                        self.print_trigger.emit("<== " + "Address: " + str(self.address[0]) + " " + msg[0:4] + "  " + msg[4:10], "12")
 
                         output(self.output_lock, "\r\nUpload Started")
 

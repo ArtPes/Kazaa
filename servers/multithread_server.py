@@ -28,10 +28,6 @@ class Server(threading.Thread, QtCore.QThread):
         self.is_supernode = is_supernode
 
     def run(self):
-        self.print_trigger.emit("##############################################", "10")
-        self.print_trigger.emit("Starting server...", "10")
-        self.print_trigger.emit("##############################################", "10")
-
         try:
             for item in self.port_dir, self.port_peer:
                 self.sock_lst.append(socket.socket(socket.AF_INET6, socket.SOCK_STREAM))
@@ -43,15 +39,11 @@ class Server(threading.Thread, QtCore.QThread):
             if self.sock_lst[-1]:
                 self.sock_lst[-1].close()
                 self.sock_lst = self.sock_lst[:-1]
-                self.print_trigger.emit("##############################################", "11")
                 self.print_trigger.emit("Could not open socket", "11")
-                self.print_trigger.emit("##############################################", "11")
             sys.exit(1)
 
         self.running = 1
-        self.print_trigger.emit("##############################################", "10")
-        self.print_trigger.emit("Server running", "10")
-        self.print_trigger.emit("##############################################", "10")
+        self.print_trigger.emit("Server running...", "10")
         while self.running:
             inputready, outputready, exceptready = select.select(self.sock_lst, [], [])
 

@@ -62,7 +62,6 @@ def recvall(socket, chunk_size):
     return data
 
 
-
 def filesize(self, n):
         """
         Calcola la dimensione del file
@@ -79,24 +78,6 @@ def filesize(self, n):
         f.seek(0, 0)
         f.close()
         return sz
-
-
-def print_menu_top(lock):
-    lock.acquire()
-    print("########################################################")
-    print("##                                                    ##")
-    print("## |  \  /  \                                         ##\n" + \
-          "## | $$ /  $$  ______   ________   ______    ______   ##\n" + \
-          "## | $$/  $$  |      \ |        \ |      \  |      \  ##\n" + \
-          "## | $$  $$    \$$$$$$\ \$$$$$$$$  \$$$$$$\  \$$$$$$\ ##\n" + \
-          "## | $$$$$\   /      $$  /    $$  /      $$ /      $$ ##\n" + \
-          "## | $$ \$$\ |  $$$$$$$ /  $$$$_ |  $$$$$$$|  $$$$$$$ ##\n" + \
-          "## | $$  \$$\ \$$    $$|  $$    \ \$$    $$ \$$    $$ ##\n" + \
-          "## \$$   \$$  \$$$$$$$ \$$$$$$$$  \$$$$$$$  \$$$$$$$  ##")
-    print("##                                                    ##")
-    print("########################################################")
-    print("##                                                    ##")
-    lock.release()
 
 
 def print_menu_bottom(lock):
@@ -164,14 +145,11 @@ def sendTo(print_trigger, print_mode, ipv4, ipv6, port, msg):
             msg_port = msg[75:80]
             msg_ttl = msg[80:82]
 
-            print_trigger.emit("##############################################", print_mode + "2")
-            print_trigger.emit("PACKET SENT", "12")
-            print_trigger.emit("\tAddress: " + str(c.socket.getpeername()[0]) + "\n\tCommand: " + msg[0:4] + "\n\tMessage pktID: " + msg_pktId + "\n\tMsg IPv4: " +
-                               msg_ipv4 + "\n\tMsg IPv6: " + msg_ipv6 + "\n\tMsg Port: " + msg_port + "\n\tMsg TTL: " + msg_ttl, print_mode + "2")
-            print_trigger.emit("##############################################", print_mode + "2")
+            print_trigger.emit("***SUPERNODE MSG***", print_mode + "2")
+            print_trigger.emit("==> " + "Address: " + str(c.socket.getpeername()[0]) + " | " + msg[0:4] + " " + msg_pktId + " " + msg_ipv4 + " " + msg_ipv6 + " " + msg_port + " " + msg_ttl, print_mode + "2")
 
             # Spazio
-            print_trigger.emit("", print_mode + "0")
+            print_trigger.emit("", print_mode + "2")
 
         elif msg[0:4] == "ASUP":
             msg_pktId = msg[4:20]
@@ -179,14 +157,10 @@ def sendTo(print_trigger, print_mode, ipv4, ipv6, port, msg):
             msg_ipv6 = msg[36:75]
             msg_port = msg[75:80]
 
-            print_trigger.emit("##############################################", print_mode + "2")
-            print_trigger.emit("PACKET SENT", "12")
-            print_trigger.emit("\tAddress: " + str(c.socket.getpeername()[0]) + "\n\tCommand: " + msg[0:4] + "\n\tMessage pktID: " + msg_pktId + "\n\tMsg IPv4: " +
-                               msg_ipv4 + "\n\tMsg IPv6: " + msg_ipv6 + "\n\tMsg Port: " + msg_port, print_mode + "2")
-            print_trigger.emit("##############################################", print_mode + "2")
-
+            print_trigger.emit("***ACK_SUPERNODE MSG***", print_mode + "2")
+            print_trigger.emit("<== " + "Address: " + str(c.socket.getpeername()[0]) + " | " + msg[0:4] + " " + msg_pktId + " " + msg_ipv4 + " " + msg_ipv6 + " " + msg_port, print_mode + "2")
             # Spazio
-            print_trigger.emit("", print_mode + "0")
+            print_trigger.emit("", print_mode + "2")
 
         elif msg[0:4] == "QUER":
             msg_pktId = msg[4:20]
@@ -196,14 +170,10 @@ def sendTo(print_trigger, print_mode, ipv4, ipv6, port, msg):
             msg_ttl = msg[80:82]
             msg_searchStr = msg[82:102]
 
-            print_trigger.emit("##############################################", print_mode + "2")
-            print_trigger.emit("PACKET SENT", "12")
-            print_trigger.emit("\tAddress: " + str(c.socket.getpeername()[0]) + "\n\tCommand: " + msg[0:4] + "\n\tMessage pktID: " + msg_pktId + "\n\tMsg IPv4: " +
-                               msg_ipv4 + "\n\tMsg IPv6: " + msg_ipv6 + "\n\tMsg Port: " + msg_port + "\n\tMsg TTL: " + msg_ttl + "\n\tMsg search_str: " + msg_searchStr, print_mode + "2")
-            print_trigger.emit("##############################################", print_mode + "2")
-
+            print_trigger.emit("***QUERY MSG***", print_mode + "2")
+            print_trigger.emit("==> " + "Address: " + str(c.socket.getpeername()[0]) + " | " + msg[0:4] + " " + msg_pktId + " " + msg_ipv4 + " " + msg_ipv6 + " " + msg_port + " " + msg_ttl + " " + msg_searchStr, print_mode + "2")
             # Spazio
-            print_trigger.emit("",  print_mode + "0")
+            print_trigger.emit("",  print_mode + "2")
 
         elif msg[0:4] == "AQUE":
             msg_pktId = msg[4:20]
@@ -213,15 +183,11 @@ def sendTo(print_trigger, print_mode, ipv4, ipv6, port, msg):
             msg_md5 = msg[80:112]
             msg_fname = msg[112:212]
 
-            print_trigger.emit("##############################################", print_mode + "2")
-            print_trigger.emit("PACKET SENT", "12")
-            print_trigger.emit("\tAddress: " + str(c.socket.getpeername()[0]) + "\n\tCommand: " + msg[0:4] + "\n\tMessage pktID: " + msg_pktId + "\n\tMsg IPv4: " +
-                               msg_ipv4 + "\n\tMsg IPv6: " + msg_ipv6 + "\n\tMsg Port: " + msg_port + "\n\tMsg MD5: " + msg_md5 +
-                               "\n\tMsg Filename: " + msg_fname, print_mode + "2")
-            print_trigger.emit("##############################################", print_mode + "2")
-
+            print_trigger.emit("***ACK_QUERY MSG", print_mode + "2")
+            print_trigger.emit("<== " + "Address: " + str(c.socket.getpeername()[0]) + " | " + msg[0:4] + " " + msg_pktId + " " + msg_ipv4 + " " + msg_ipv6 + " " + msg_port + " " + msg_md5 +
+                               " " + msg_fname, print_mode + "2")
             # Spazio
-            print_trigger.emit("", print_mode + "0")
+            print_trigger.emit("", print_mode + "2")
 
         peerSock.close()
     except IOError as e:
